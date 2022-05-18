@@ -140,7 +140,7 @@ def print_stats(
 ) -> None:
 
     print(f"********{tokenization_method}********")
-    stats = stats_cal(dataset, dataset_name)
+    stats = stats_cal(dataset, dataset_name, tokenization_method)
 
 
 def load_data(dataset_name: str, version: str, split_: str = "train"):
@@ -162,6 +162,7 @@ nlp = en_core_web_sm.load(
 # load cnn_dailymail
 cnn_train = load_data("cnn_dailymail", "3.0.0", "train")
 print_stats(cnn_train, "cnn_dailymail")
+print_stats(cnn_train, "spacy")
 # cnn_test = load_dataset("cnn_dailymail", "3.0.0", split="test")
 # cnn_valid = load_dataset("cnn_dailymail", "3.0.0", split="validation")
 
@@ -169,6 +170,7 @@ print_stats(cnn_train, "cnn_dailymail")
 # load xsum
 xsum_train = load_data("xsum", "1.2.0", "train")
 print_stats(xsum_train, "xsum")
+print_stats(xsum_train, "spacy")
 # xsum_test = load_dataset("xsum", "1.2.0", split="test")
 # xsum_valid = load_dataset("xsum", "1.2.0", split="validation")
 
@@ -180,6 +182,7 @@ print_stats(xsum_train, "xsum")
 # load scitldr
 scitldr_train = load_data("scitldr", "Abstract", "train")
 print_stats(scitldr_train, "scitldr")
+print_stats(scitldr_train, "spacy")
 # scitldr_test = load_dataset("scitldr", "Abstract", split="test")
 # scitldr_valid = load_dataset("scitldr", "Abstract", split="validation")
 
@@ -187,5 +190,6 @@ print_stats(scitldr_train, "scitldr")
 # load billsum
 billsum_train = load_data("billsum", "3.0.0", "train")
 print_stats(billsum_train, "billsum")
+print_stats(billsum_train, "spacy")
 # billsum_test = load_dataset("billsum", "3.0.0", split="test")
 # billsum_valid = load_dataset("billsum", "3.0.0", split="ca_test")
