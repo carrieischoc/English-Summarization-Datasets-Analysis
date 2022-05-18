@@ -1,0 +1,7 @@
+Basic stats computation function:
+-- given the input of a dataset -- computes the following stats:
+
+Number of samples in train/validation/test (if available);
+Mean number of tokens (this can be whitespace-splitting for now) for source texts, including standard deviation and median;
+Mean number of tokens (this can be whitespace-splitting for now) for summary texts, including standard deviation and median;
+Compression_ratio.
