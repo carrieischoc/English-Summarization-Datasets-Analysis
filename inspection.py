@@ -162,7 +162,7 @@ nlp = en_core_web_sm.load(
 # load cnn_dailymail
 cnn_train = load_data("cnn_dailymail", "3.0.0", "train")
 print_stats(cnn_train, "cnn_dailymail")
-print_stats(cnn_train, "spacy")
+print_stats(cnn_train, "cnn_dailymail", "spacy")
 # cnn_test = load_dataset("cnn_dailymail", "3.0.0", split="test")
 # cnn_valid = load_dataset("cnn_dailymail", "3.0.0", split="validation")
 
@@ -170,7 +170,7 @@ print_stats(cnn_train, "spacy")
 # load xsum
 xsum_train = load_data("xsum", "1.2.0", "train")
 print_stats(xsum_train, "xsum")
-print_stats(xsum_train, "spacy")
+print_stats(xsum_train, "xsum", "spacy")
 # xsum_test = load_dataset("xsum", "1.2.0", split="test")
 # xsum_valid = load_dataset("xsum", "1.2.0", split="validation")
 
@@ -182,7 +182,7 @@ print_stats(xsum_train, "spacy")
 # load scitldr
 scitldr_train = load_data("scitldr", "Abstract", "train")
 print_stats(scitldr_train, "scitldr")
-print_stats(scitldr_train, "spacy")
+print_stats(scitldr_train, "scitldr", "spacy")
 # scitldr_test = load_dataset("scitldr", "Abstract", split="test")
 # scitldr_valid = load_dataset("scitldr", "Abstract", split="validation")
 
@@ -190,6 +190,6 @@ print_stats(scitldr_train, "spacy")
 # load billsum
 billsum_train = load_data("billsum", "3.0.0", "train")
 print_stats(billsum_train, "billsum")
-print_stats(billsum_train, "spacy")
+print_stats(billsum_train, "billsum", "spacy")
 # billsum_test = load_dataset("billsum", "3.0.0", split="test")
 # billsum_valid = load_dataset("billsum", "3.0.0", split="ca_test")
