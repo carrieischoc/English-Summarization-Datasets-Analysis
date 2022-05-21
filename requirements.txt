@@ -1,6 +1,8 @@
-Basic stats computation function:
--- given the input of a dataset -- computes the following stats:
-  Number of samples in train/validation/test (if available);
-  Mean number of tokens (this can be whitespace-splitting for now) for source texts, including standard deviation and median;
-  Mean number of tokens (this can be whitespace-splitting for now) for summary texts, including standard deviation and median;
-  Compression_ratio.
+# pip install packages
+python -m pip install numpy
+python -m pip install pandas
+python -m pip install tqmd
+python -m pip install datasets
+python -m pip install spacy
+python -m pip install en_core_web_sm
+python -m spacy download en
