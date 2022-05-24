@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # pip install packages with 'python -m pip install'
 numpy
 pandas
