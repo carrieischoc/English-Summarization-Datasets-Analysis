@@ -1,8 +1,8 @@
-# pip install packages
-python -m pip install numpy
-python -m pip install pandas
-python -m pip install tqmd
-python -m pip install datasets
-python -m pip install spacy
-python -m pip install en_core_web_sm
-python -m spacy download en
+# pip install packages with 'python -m pip install'
+numpy
+pandas
+tqdm
+datasets
+spacy
+# other install instructions wiht en_core_web_sm
+
