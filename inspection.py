@@ -13,7 +13,7 @@ def rename_datasets(dataset):
     return dataset
 
 
-def spacy_token(tokens: List[str]) -> NamedTuple:
+def spacy_token(samples: List[str]) -> NamedTuple:
     """
     Compute number of tokens in each row.
     Input: rows of tokens, number of rows.
@@ -22,9 +22,12 @@ def spacy_token(tokens: List[str]) -> NamedTuple:
 
     stats = namedtuple("stats", "mean median std")
 
-    lens = [len(nlp(token)) for token in tqdm(tokens)]
+    # lens = [len(nlp(token)) for token in tqdm(tokens)]
+    tokens = list(tqdm(nlp.pipe(samples, n_process=8), total=len(samples)))
+    lens = [len(token) for token in (iter(tokens))]
 
     lens = np.array(lens)
+    stats.lens = lens
     stats.mean = np.mean(lens)
     stats.median = np.median(lens)
     stats.std = np.std(lens)
@@ -32,11 +35,11 @@ def spacy_token(tokens: List[str]) -> NamedTuple:
     return stats
 
 
-def whitespace_token(tokens: List[str]) -> NamedTuple:
+def whitespace_token(samples: List[str]) -> NamedTuple:
 
     stats = namedtuple("stats", "mean median std lens")
 
-    lens = tokens.str.split().str.len()
+    lens = samples.str.split().str.len()
 
     lens = np.array(lens)
     stats.lens = lens
@@ -65,6 +68,11 @@ def format_tuning(dataset):
     dataset["target"] = dataset["target"].str.join("")
     return dataset
 
+def remove_empty(df):
+    df.replace(to_replace=r'^\s*$',value=np.nan,regex=True,inplace=True)
+    df = df.dropna()
+    return df
+
 
 def stats_cal(
     dataset,
@@ -84,17 +92,21 @@ def stats_cal(
     stats = namedtuple("stats", "src tg")
     stats.src = stats_attr_src
     stats.tg = stats_attr_tg
-    stats.src.SampleNum = dataset.num_rows
-    stats.tg.SampleNum = dataset.num_rows
+
+    # Use pandas dataframe to process data and remove samples that contain empty strings. 
 
     if dataset.features["source"]._type == "Value":  # One row of source is one article.
-        if tokenization_method == "whitespace":
             dataset = dataset.to_pandas()
+            
     elif (
         dataset.features["source"]._type == "Sequence"
     ):  # One row of source is a line in article or combined with article, summary and id.
         dataset = format_tuning(dataset)
-
+    
+    dataset = remove_empty(dataset)
+    stats.src.SampleNum = dataset.shape[0]
+    stats.tg.SampleNum = stats.src.SampleNum
+    
     if tokenization_method == "whitespace":
         stats_src = whitespace_token(dataset["source"])
         stats_tg = whitespace_token(dataset["target"])
@@ -140,7 +152,7 @@ def print_stats(
 ) -> None:
 
     print(f"********{tokenization_method}********")
-    stats = stats_cal(dataset, dataset_name)
+    stats = stats_cal(dataset, dataset_name, tokenization_method)
 
 
 def load_data(dataset_name: str, version: str, split_: str = "train"):
@@ -154,38 +166,29 @@ def load_data(dataset_name: str, version: str, split_: str = "train"):
 
     return dataset
 
+def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
+    dataset = load_data(dataset_name, version, split_)
+    print_stats(dataset, dataset_name) # whitespace tokenization
+    print_stats(dataset, dataset_name, "spacy") # spacy tokenization
+
+
 
 nlp = en_core_web_sm.load(
     disable=("tok2vec", "tagger", "lemmatizer", "ner")
 )  # Disabling components for only tokenization use.
 
-# load cnn_dailymail
-cnn_train = load_data("cnn_dailymail", "3.0.0", "train")
-print_stats(cnn_train, "cnn_dailymail")
-# cnn_test = load_dataset("cnn_dailymail", "3.0.0", split="test")
-# cnn_valid = load_dataset("cnn_dailymail", "3.0.0", split="validation")
+# load data and print stats of cnn_dailymail
+load_print("cnn_dailymail", "3.0.0", "train")
 
+# load data and print stats of xsum
+load_print("xsum", "1.2.0", "train")
 
-# load xsum
-xsum_train = load_data("xsum", "1.2.0", "train")
-print_stats(xsum_train, "xsum")
-# xsum_test = load_dataset("xsum", "1.2.0", split="test")
-# xsum_valid = load_dataset("xsum", "1.2.0", split="validation")
+# load data and print stats of wiki_lingua English
+load_print("wiki_lingua", "english", "train")
 
-# load wiki_lingua English
-# wiki_lingua_train = load_data("wiki_lingua", "english", "train")
-# print_stats(wiki_lingua_train,"wiki_lingua")
+# load data and print stats of scitldr
+load_print("scitldr", "Abstract", "train")
+load_print("scitldr", "FullText", "train")
 
-
-# load scitldr
-scitldr_train = load_data("scitldr", "Abstract", "train")
-print_stats(scitldr_train, "scitldr")
-# scitldr_test = load_dataset("scitldr", "Abstract", split="test")
-# scitldr_valid = load_dataset("scitldr", "Abstract", split="validation")
-
-
-# load billsum
-billsum_train = load_data("billsum", "3.0.0", "train")
-print_stats(billsum_train, "billsum")
-# billsum_test = load_dataset("billsum", "3.0.0", split="test")
-# billsum_valid = load_dataset("billsum", "3.0.0", split="ca_test")
+# load data and print stats of billsum
+load_print("billsum", "3.0.0", "train")

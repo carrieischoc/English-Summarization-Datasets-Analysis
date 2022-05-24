@@ -1,0 +1,8 @@
+# pip install packages with 'python -m pip install'
+numpy
+pandas
+tqdm
+datasets
+spacy
+# other install instructions wiht en_core_web_sm
+
