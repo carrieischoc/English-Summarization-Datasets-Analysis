@@ -24,17 +24,19 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     maxi = 0 # maximum similarity of all summary sentences
 
     for sample in tqdm(dataset):
+        # ignore empty source and target
+        if sample["target"] == "" or sample["source"] == "": 
+            continue
         m = []  # mean
         for aligned_sentence in aligner.extract_source_sentences(
             sample["target"], sample["source"]
         ):
             m.append(aligned_sentence.metric)
-
-        if len(m) != 0:  # ignore results of empty rows
-            mm.append(sum(m) / len(m))
-            m_max.append(max(m))
-            if maxi < max(m):
-                maxi = max(m)
+        
+        mm.append(sum(m) / len(m))
+        m_max.append(max(m))
+        if maxi < max(m):
+            maxi = max(m)
 
     similarity.mean = sum(mm) / len(mm)
     similarity.m_max = sum(m_max) / len(m_max)
@@ -60,7 +62,7 @@ def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
 
 
 # load data and print stats of cnn_dailymail
-# load_print("cnn_dailymail", "3.0.0", "train")
+load_print("cnn_dailymail", "3.0.0", "train")
 
 # load data and print stats of xsum
 # load_print("xsum", "1.2.0", "train")
@@ -70,7 +72,7 @@ def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
 
 # load data and print stats of scitldr
 # load_print("scitldr", "Abstract", "train")
-load_print("scitldr", "FullText", "train")
+# load_print("scitldr", "FullText", "train")
 
 # load data and print stats of billsum
 # load_print("billsum", "3.0.0", "train")
