@@ -44,13 +44,13 @@ def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
         dataset = pd.DataFrame(dataset["source"])
         dataset = dataset.rename(columns={"document": "source", "summary": "target"})
         dataset = Dataset.from_pandas(dataset)
+    print(dataset[0])
+    # similarity = compute_similarity(dataset)
 
-    similarity = compute_similarity(dataset)
-
-    print(f"[{dataset_name}] Mean similarity of summaries: {similarity.mean:.2f}.")
-    print(
-        f"[{dataset_name}] Mean of maximum similarities of summaries: {similarity.mean:.2f}."
-    )
+    # print(f"[{dataset_name}] Mean similarity of summaries: {similarity.mean:.2f}.")
+    # print(
+    #     f"[{dataset_name}] Mean of maximum similarities of summaries: {similarity.max:.2f}."
+    # )
 
 
 # load data and print stats of cnn_dailymail
@@ -68,3 +68,5 @@ load_print("wiki_lingua", "english", "train")
 
 # load data and print stats of billsum
 # load_print("billsum", "3.0.0", "train")
+
+
