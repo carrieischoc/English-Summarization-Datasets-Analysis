@@ -172,23 +172,23 @@ def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
     print_stats(dataset, dataset_name, "spacy") # spacy tokenization
 
 
+if __name__ == '__main__':
+    nlp = en_core_web_sm.load(
+        disable=("tok2vec", "tagger", "lemmatizer", "ner")
+    )  # Disabling components for only tokenization use.
 
-nlp = en_core_web_sm.load(
-    disable=("tok2vec", "tagger", "lemmatizer", "ner")
-)  # Disabling components for only tokenization use.
+    # load data and print stats of cnn_dailymail
+    load_print("cnn_dailymail", "3.0.0", "train")
 
-# load data and print stats of cnn_dailymail
-load_print("cnn_dailymail", "3.0.0", "train")
+    # load data and print stats of xsum
+    load_print("xsum", "1.2.0", "train")
 
-# load data and print stats of xsum
-load_print("xsum", "1.2.0", "train")
+    # load data and print stats of wiki_lingua English
+    load_print("wiki_lingua", "english", "train")
 
-# load data and print stats of wiki_lingua English
-load_print("wiki_lingua", "english", "train")
+    # load data and print stats of scitldr
+    load_print("scitldr", "Abstract", "train")
+    load_print("scitldr", "FullText", "train")
 
-# load data and print stats of scitldr
-load_print("scitldr", "Abstract", "train")
-load_print("scitldr", "FullText", "train")
-
-# load data and print stats of billsum
-load_print("billsum", "3.0.0", "train")
+    # load data and print stats of billsum
+    load_print("billsum", "3.0.0", "train")
