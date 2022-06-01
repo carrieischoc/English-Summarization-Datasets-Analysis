@@ -18,24 +18,31 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     # use fmeasure to determine similarity
     aligner = RougeNAligner(n=n_gram, optimization_attribute="fmeasure", lang="en")
 
-    similarity = namedtuple("similarity", "mean median std max_max mean_max min_min mean_min ")
+    similarity = namedtuple(
+        "similarity", "mean median std max_max mean_max min_min mean_min "
+    )
 
     mm = []  # mean of mean
     m_max = []  # mean of maximum
     m_min = []  # mean of minimum
-    maxi = 0 # maximum similarity of all summary sentences
-    mini = np.inf # minimum similarity of all summary sentences
+    maxi = 0  # maximum similarity of all summary sentences
+    mini = np.inf  # minimum similarity of all summary sentences
 
     for sample in tqdm(dataset):
         # ignore empty source and target
-        if sample["target"] == "" or sample["source"] == "": 
+        if (
+            sample["target"] == ""
+            or sample["target"] == []
+            or sample["source"] == ""
+            or sample["source"] == []
+        ):
             continue
         m = []  # mean
         for aligned_sentence in aligner.extract_source_sentences(
             sample["target"], sample["source"]
         ):
             m.append(aligned_sentence.metric)
-        
+
         mm.append(sum(m) / len(m))
         m_max.append(max(m))
         m_min.append(min(m))
@@ -80,16 +87,14 @@ def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
 # load_print("cnn_dailymail", "3.0.0", "train")
 
 # load data and print stats of xsum
-# load_print("xsum", "1.2.0", "train")
+load_print("xsum", "1.2.0", "train")
 
 # load data and print stats of wiki_lingua English
 # load_print("wiki_lingua", "english", "train")
 
 # load data and print stats of scitldr
-load_print("scitldr", "Abstract", "train")
-load_print("scitldr", "FullText", "train")
+# load_print("scitldr", "Abstract", "train")
+# load_print("scitldr", "FullText", "train")
 
 # load data and print stats of billsum
 # load_print("billsum", "3.0.0", "train")
-
-
