@@ -4,7 +4,7 @@ import pandas as pd
 import en_core_web_sm
 from tqdm import tqdm
 from collections import namedtuple
-from typing import List, Tuple, NamedTuple
+from typing import List, NamedTuple
 
 
 def rename_datasets(dataset):
@@ -26,7 +26,6 @@ def spacy_token(samples: List[str]) -> NamedTuple:
     tokens = list(tqdm(nlp.pipe(samples, n_process=8), total=len(samples)))
     lens = [len(token) for token in (iter(tokens))]
 
-    lens = np.array(lens)
     stats.lens = lens
     stats.mean = np.mean(lens)
     stats.median = np.median(lens)
@@ -41,7 +40,6 @@ def whitespace_token(samples: List[str]) -> NamedTuple:
 
     lens = samples.str.split().str.len()
 
-    lens = np.array(lens)
     stats.lens = lens
     stats.mean = np.mean(lens)
     stats.median = np.median(lens)
