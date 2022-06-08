@@ -1,5 +1,5 @@
 from summaries.aligners import RougeNAligner
-from inspection import load_data
+from LoadData import *
 import pandas as pd
 from tqdm import tqdm
 from collections import namedtuple
@@ -59,8 +59,9 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     similarity.min_min = mini
 
 
-def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
-    dataset = load_data(dataset_name, version, split_)
+def load_print(dataset_name: str, split_: str = "train") -> None:
+    dataset = load_data(dataset_name, split_)
+
     if dataset_name == "wiki_lingua":
         dataset = pd.DataFrame(dataset["source"])
         dataset = dataset.rename(columns={"document": "source", "summary": "target"})
@@ -77,18 +78,5 @@ def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
     print(f"[{dataset_name}] [Similarity] mean_min: {similarity.mean_min:.4f}.")
 
 
-# load data and print stats of cnn_dailymail
-# load_print("cnn_dailymail", "3.0.0", "train")
-
-# load data and print stats of xsum
-# load_print("xsum", "1.2.0", "train")
-
-# load data and print stats of wiki_lingua English
-# load_print("wiki_lingua", "english", "train")
-
-# load data and print stats of scitldr
-load_print("scitldr", "Abstract", "train")
-# load_print("scitldr", "FullText", "train")
-
-# load data and print stats of billsum
-# load_print("billsum", "3.0.0", "train")
+# load data and print similarity stats
+load_print(args.ds[0], args.ds[1])

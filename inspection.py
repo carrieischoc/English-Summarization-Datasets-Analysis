@@ -1,16 +1,10 @@
-from datasets import load_dataset
 import numpy as np
 import pandas as pd
 import en_core_web_sm
 from tqdm import tqdm
 from collections import namedtuple
 from typing import List, NamedTuple
-
-
-def rename_datasets(dataset):
-    dataset = dataset.rename_column(dataset.column_names[0], "source")
-    dataset = dataset.rename_column(dataset.column_names[1], "target")
-    return dataset
+from LoadData import *
 
 
 def spacy_token(samples: List[str]) -> NamedTuple:
@@ -26,7 +20,7 @@ def spacy_token(samples: List[str]) -> NamedTuple:
     tokens = list(tqdm(nlp.pipe(samples, n_process=8), total=len(samples)))
     lens = [len(token) for token in (iter(tokens))]
 
-    stats.lens = lens
+    stats.lens = np.array(lens)
     stats.mean = np.mean(lens)
     stats.median = np.median(lens)
     stats.std = np.std(lens)
@@ -153,19 +147,8 @@ def print_stats(
     stats = stats_cal(dataset, dataset_name, tokenization_method)
 
 
-def load_data(dataset_name: str, version: str, split_: str = "train"):
-    dataset = load_dataset(dataset_name, version, split=split_)
-    if dataset_name == "wiki_lingua":
-        dataset = dataset.rename_column("article", "source")
-    elif dataset_name == "scitldr":
-        pass
-    else:
-        dataset = rename_datasets(dataset)
-
-    return dataset
-
-def load_print(dataset_name: str, version: str, split_: str = "train") -> None:
-    dataset = load_data(dataset_name, version, split_)
+def load_print(dataset_name: str, split_: str = "train") -> None:
+    dataset = load_data(dataset_name, split_)
     print_stats(dataset, dataset_name) # whitespace tokenization
     print_stats(dataset, dataset_name, "spacy") # spacy tokenization
 
@@ -175,18 +158,5 @@ if __name__ == '__main__':
         disable=("tok2vec", "tagger", "lemmatizer", "ner")
     )  # Disabling components for only tokenization use.
 
-    # load data and print stats of cnn_dailymail
-    load_print("cnn_dailymail", "3.0.0", "train")
-
-    # load data and print stats of xsum
-    load_print("xsum", "1.2.0", "train")
-
-    # load data and print stats of wiki_lingua English
-    load_print("wiki_lingua", "english", "train")
-
-    # load data and print stats of scitldr
-    load_print("scitldr", "Abstract", "train")
-    load_print("scitldr", "FullText", "train")
-
-    # load data and print stats of billsum
-    load_print("billsum", "3.0.0", "train")
+    # load data and print stats 
+    load_print(args.ds[0], args.ds[1])
