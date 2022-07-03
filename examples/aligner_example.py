@@ -20,6 +20,6 @@ if __name__ == '__main__':
     print("The output of this script will print one sentence (as well as the similarity score and relative position) "
           "for each sentence in the summary.\n")
     for aligned_sentence in aligner.extract_source_sentences(summary_text, reference_text):
-        print(aligned_sentence.metric)
+        print(aligned_sentence.relative_position)
 
   

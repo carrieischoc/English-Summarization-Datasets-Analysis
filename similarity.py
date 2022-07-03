@@ -1,15 +1,12 @@
 from summaries.aligners import RougeNAligner
-from LoadData import *
+from LoadData import load_data
 import pandas as pd
 from tqdm import tqdm
 from collections import namedtuple
-from typing import NamedTuple
 from datasets import Dataset
 import numpy as np
+from typing import NamedTuple, List
 
-similarity = namedtuple(
-    "similarity", "mean median std max_max mean_max min_min mean_min "
-)
 
 def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     """
@@ -18,14 +15,15 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     Output: mean of mean similarities of summaries, mean of maximum similarities of summaries.
     """
 
+    similarity = namedtuple("similarity", "mean max min pos")
+
     # use fmeasure to determine similarity
     aligner = RougeNAligner(n=n_gram, optimization_attribute="fmeasure", lang="en")
 
-    mean = []  # mean of mean
-    mean_max = []  # mean of maximum
-    mean_min = []  # mean of minimum
-    maxi = 0  # maximum similarity of all summary sentences
-    mini = np.inf  # minimum similarity of all summary sentences
+    mean = []  # mean of all summaries per article
+    maxi = []  # maximum of all summaries per article
+    mini = []  # minimum of all summaries per article
+    pos = []  # relative position to the most similar sentences of all summaries
 
     for sample in tqdm(dataset):
         # ignore empty source and target
@@ -36,47 +34,81 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
             or sample["source"] == []
         ):
             continue
+
         m = []  # mean
         for aligned_sentence in aligner.extract_source_sentences(
             sample["target"], sample["source"]
         ):
             m.append(aligned_sentence.metric)
+            pos.append(aligned_sentence.relative_position)
 
         mean.append(np.mean(m))
-        mean_max.append(max(m))
-        mean_min.append(min(m))
-        if maxi < max(m):
-            maxi = max(m)
-        if mini > min(m):
-            mini = min(m)
+        maxi.append(max(m))
+        mini.append(min(m))
 
-    similarity.mean = np.mean(mean)
-    similarity.median = np.median(mean)
-    similarity.std = np.std(mean)
-    similarity.mean_max = np.mean(mean_max)
-    similarity.mean_min = np.mean(mean_min)
-    similarity.max_max = maxi
-    similarity.min_min = mini
+    similarity.mean = mean
+    similarity.max = maxi
+    similarity.min = mini
+    similarity.pos = pos
+
+    # write data into .txt file
+    # write_csv("similarity.txt", mean)
+    # write_csv("similarity.txt", maxi)
+    # write_csv("similarity.txt", mini)
+    # write_csv("position.txt", pos)
+
+    return similarity
 
 
-def load_print(dataset_name: str, split_: str = "train") -> None:
-    dataset = load_data(dataset_name, split_)
+def print_simi(stats_to_compute, dataset_name: str, similarity: NamedTuple) -> None:
+    if "mean" in stats_to_compute:
+        print(
+            f"[{dataset_name}] [Similarity] Mean of all means of each article : {np.mean(similarity.mean):.4f}."
+        )
+        print(
+            f"[{dataset_name}] [Similarity] Median of all means of each article: {np.median(similarity.mean):.4f}."
+        )
+        print(
+            f"[{dataset_name}] [Similarity] std of all means of each article: {np.std(similarity.mean):.4f}."
+        )
+
+    if "max" in stats_to_compute:
+        print(
+            f"[{dataset_name}] [Similarity] Max of all maximums of each article: {np.max(similarity.max):.4f}."
+        )
+        print(
+            f"[{dataset_name}] [Similarity] Mean of all maximums of each article: {np.mean(similarity.max):.4f}."
+        )
+
+    if "min" in stats_to_compute:
+        print(
+            f"[{dataset_name}] [Similarity] Min of all minimum of each article: {np.min(similarity.min):.4f}."
+        )
+        print(
+            f"[{dataset_name}] [Similarity] Mean of all minimum of each article: {np.mean(similarity.min):.4f}."
+        )
+
+
+def get_simi(dataset_name: str, split: str = "train") -> NamedTuple:
+    dataset = load_data(dataset_name, split)
 
     if dataset_name == "wiki_lingua":
         dataset = pd.DataFrame(dataset["source"])
         dataset = dataset.rename(columns={"document": "source", "summary": "target"})
         dataset = Dataset.from_pandas(dataset)
 
-    compute_similarity(dataset)
+    similarity = compute_similarity(dataset)
 
-    print(f"[{dataset_name}] [Similarity] Mean: {similarity.mean:.4f}.")
-    print(f"[{dataset_name}] [Similarity] Median: {similarity.median:.4f}.")
-    print(f"[{dataset_name}] [Similarity] std: {similarity.std:.4f}.")
-    print(f"[{dataset_name}] [Similarity] max_max: {similarity.max_max:.4f}.")
-    print(f"[{dataset_name}] [Similarity] min_min: {similarity.min_min:.4f}.")
-    print(f"[{dataset_name}] [Similarity] mean_max: {similarity.mean_max:.4f}.")
-    print(f"[{dataset_name}] [Similarity] mean_min: {similarity.mean_min:.4f}.")
+    return similarity
 
 
-# load data and print similarity stats
-load_print(args.ds[0], args.ds[1])
+def get_print_simi(
+    dataset_name: str,
+    split: str = "train",
+    stats_to_compute: List[str] = ["mean", "max", "min"],
+) -> None:
+
+    similarity = get_simi(dataset_name, split)
+
+    # print similariity stats
+    print_simi(stats_to_compute, dataset_name, similarity)
