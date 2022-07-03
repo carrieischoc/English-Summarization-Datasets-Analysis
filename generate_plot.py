@@ -283,7 +283,7 @@ if __name__ == "__main__":
             cls_sts.append(sts.tg.lens)
 
             # Histogram of compression ratio with vertical lines (mean - red, max - green, median - black, std - dashed gray)
-            compute_show_ratio([sts.src.lens, sts.tg.lens], args.tm[0] + "_len")
+            compute_show_ratio([sts.src.lens, sts.tg.lens], args.tm[0] + "_len_" + dataset)
 
         df = make_dfs(cls_sts, cls_names, datasets, "length")
 
