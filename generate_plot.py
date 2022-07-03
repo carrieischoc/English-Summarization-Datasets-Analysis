@@ -278,7 +278,7 @@ if __name__ == "__main__":
         cls_names = ["ref", "sum"]
 
         for dataset in datasets:
-            sts = get_lens(dataset, args.ds[1], args.tm[0], args.p[0])
+            sts = get_lens(dataset, args.ds[1], args.tm[0], args.p)
             cls_sts.append(sts.src.lens)
             cls_sts.append(sts.tg.lens)
 
@@ -299,7 +299,7 @@ if __name__ == "__main__":
         cls_names = ["mean", "max", "min"]
 
         for dataset in datasets:
-            sts = get_simi(dataset, args.ds[1], args.p[0])
+            sts = get_simi(dataset, args.ds[1], args.p)
             cls_sts.append(sts.mean)
             cls_sts.append(sts.max)
             cls_sts.append(sts.min)

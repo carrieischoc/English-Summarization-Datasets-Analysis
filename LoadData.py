@@ -19,7 +19,7 @@ def get_args():
     #     "--sf", nargs=1, type=str, help="if save the figure: 1, otherwise: 0"
     # )
     parser.add_argument(
-        "--p", nargs=1, type=float, const=1, help="proportion of samples"
+        "--p", nargs="?", type=float, const=1, help="proportion of samples"
     )
 
     args = parser.parse_args()
