@@ -1,6 +1,5 @@
 from datasets import load_dataset
 import numpy as np
-from datasets import Dataset
 import argparse
 from typing import List
 import csv
@@ -13,12 +12,16 @@ def get_args():
     )
     parser.add_argument("--ds", nargs=2, type=str, help="name of dataset, split")
     parser.add_argument(
-        "--tm", nargs=1, type=str, help="tokenization method: whitespacing, spacy"
+        "--tm", nargs=1, type=str, help="tokenization method: whitespace, spacy"
     )
     parser.add_argument("--sts", nargs=1, type=str, help="type of stats: simi, len")
     # parser.add_argument(
     #     "--sf", nargs=1, type=str, help="if save the figure: 1, otherwise: 0"
     # )
+    parser.add_argument(
+        "--p", nargs=1, type=float, const=1, help="proportion of samples"
+    )
+
     args = parser.parse_args()
 
     return args
@@ -56,8 +59,7 @@ def load_data(dataset_name: str, split_: str = "train", p: float = 1):
     # use a certain proportion of samples
     if p != 1:
         n = np.int64(dataset.num_rows * p)
-        dataset = dataset.shuffle()
-        dataset = Dataset.from_dict(dataset[:n])
+        dataset = dataset.select(np.random.randint(dataset.num_rows, size=n))
 
     return dataset
 
@@ -77,3 +79,10 @@ def read_csv(filename):
         data[i] = list(map(eval, data[i]))
 
     return data
+
+
+dataset = load_data("wiki_lingua", "train", 0.1)
+dataset.features["source"]
+
+dataset = load_data("wiki_lingua", "train")
+dataset.features["source"]

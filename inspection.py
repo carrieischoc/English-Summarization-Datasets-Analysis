@@ -79,13 +79,6 @@ def remove_empty(df):
 
 def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
 
-    len_stats = ["mean", "median", "std", "lens"]
-    stats_attr_src = namedtuple("stats_attr", len_stats)
-    stats_attr_tg = namedtuple("stats_attr", len_stats)
-    stats = namedtuple("stats", "src tg compression_ratio SampleNum")
-    stats.src = stats_attr_src
-    stats.tg = stats_attr_tg
-
     # Use pandas dataframe to process data and remove samples that contain empty strings.
 
     if dataset.features["source"]._type == "Value":  # One row of source is one article.
@@ -99,14 +92,19 @@ def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
     dataset = remove_empty(dataset)
 
     if tokenization_method == "whitespace":
-        stats.src = whitespace_token(dataset["source"])
-        stats.tg = whitespace_token(dataset["target"])
+        stats_src = whitespace_token(dataset["source"])
+        stats_tg = whitespace_token(dataset["target"])
     elif tokenization_method == "spacy":
-        stats.src = spacy_token(dataset["source"])
-        stats.tg = spacy_token(dataset["target"])
+        stats_src = spacy_token(dataset["source"])
+        stats_tg = spacy_token(dataset["target"])
 
-    stats.SampleNum = dataset.shape[0]
-    stats.compression_ratio = np.mean(stats.src.lens / stats.tg.lens)
+    compression_ratio = np.mean(stats_src.lens / stats_tg.lens)
+
+    stats_attr = namedtuple("stats_attr", "mean median std lens")
+    stats_all = namedtuple("stats", "src tg compression_ratio SampleNum")
+    src = stats_attr(stats_src.mean, stats_src.median, stats_src.std, stats_src.lens)
+    tg = stats_attr(stats_tg.mean, stats_tg.median, stats_tg.std, stats_tg.lens)
+    stats = stats_all(src, tg, compression_ratio, dataset.shape[0])
 
     return stats
 
@@ -139,9 +137,12 @@ def print_lens(
 
 
 def get_lens(
-    dataset_name: str, split: str = "train", tokenization_method: str = "whitespace"
+    dataset_name: str,
+    split: str = "train",
+    tokenization_method: str = "whitespace",
+    p: float = 1,
 ) -> NamedTuple:
-    dataset = load_data(dataset_name, split)
+    dataset = load_data(dataset_name, split, p)
     stats = lens_cal(dataset, tokenization_method)
 
     return stats
@@ -158,6 +159,7 @@ def get_print_lens(
         "std",
         "compression_ratio",
     ],
+    p: float = 1,
 ) -> None:
-    stats = get_lens(dataset_name, split, tokenization_method)
+    stats = get_lens(dataset_name, split, tokenization_method, p)
     print_lens(stats, stats_to_compute, dataset_name, tokenization_method)

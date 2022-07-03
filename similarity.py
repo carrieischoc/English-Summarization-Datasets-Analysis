@@ -89,8 +89,8 @@ def print_simi(stats_to_compute, dataset_name: str, similarity: NamedTuple) -> N
         )
 
 
-def get_simi(dataset_name: str, split: str = "train") -> NamedTuple:
-    dataset = load_data(dataset_name, split)
+def get_simi(dataset_name: str, split: str = "train", p: float = 1) -> NamedTuple:
+    dataset = load_data(dataset_name, split, p)
 
     if dataset_name == "wiki_lingua":
         dataset = pd.DataFrame(dataset["source"])
@@ -106,9 +106,10 @@ def get_print_simi(
     dataset_name: str,
     split: str = "train",
     stats_to_compute: List[str] = ["mean", "max", "min"],
+    p: float = 1,
 ) -> None:
 
-    similarity = get_simi(dataset_name, split)
+    similarity = get_simi(dataset_name, split, p)
 
     # print similariity stats
     print_simi(stats_to_compute, dataset_name, similarity)
