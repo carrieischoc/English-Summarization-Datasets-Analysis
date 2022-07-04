@@ -54,7 +54,7 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     return similarity
 
 
-def print_simi(stats_to_compute, dataset_name: str, similarity: NamedTuple) -> None:
+def print_simi(stats_to_compute: List[str], dataset_name: str, similarity: NamedTuple) -> None:
     if "mean" in stats_to_compute:
         print(
             f"[{dataset_name}] [Similarity] Mean of all means of each article : {np.mean(similarity.mean):.4f}."
