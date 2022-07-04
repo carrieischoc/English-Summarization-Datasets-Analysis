@@ -1,0 +1,7 @@
+{"cnn_dailymail": "3.0.0",
+"xsum": "1.2.0",
+"wiki_lingua": "english",
+"scitldr_A": "Abstract",
+"scitldr_F": "FullText",
+"billsum": "3.0.0"}
+
