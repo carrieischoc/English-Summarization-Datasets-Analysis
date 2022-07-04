@@ -242,6 +242,7 @@ def plot_pos(pos: List, name: str, savefig=True):
         binrange=(0, 1),
         color="green",
         line_kws=dict(lw=1.5),
+        bins=50
     )
     plt.title(name)
     if savefig:
