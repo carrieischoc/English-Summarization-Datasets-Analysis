@@ -1,11 +1,11 @@
-from summaries.aligners import RougeNAligner
-from LoadData import load_data
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from collections import namedtuple
 from datasets import Dataset
-import numpy as np
 from typing import NamedTuple, List
+from summaries.aligners import RougeNAligner
+from LoadData import load_data
 
 
 def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
@@ -51,12 +51,6 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     similarity.min = mini
     similarity.pos = pos
 
-    # write data into .txt file
-    # write_csv("similarity.txt", mean)
-    # write_csv("similarity.txt", maxi)
-    # write_csv("similarity.txt", mini)
-    # write_csv("position.txt", pos)
-
     return similarity
 
 
@@ -89,8 +83,10 @@ def print_simi(stats_to_compute, dataset_name: str, similarity: NamedTuple) -> N
         )
 
 
-def get_simi(dataset_name: str, split: str = "train", p: float = 1) -> NamedTuple:
-    dataset = load_data(dataset_name, split, p)
+def get_simi(
+    dataset_name: str, split: str = "train", data_proportion: float = 1.0
+) -> NamedTuple:
+    dataset = load_data(dataset_name, split, data_proportion)
 
     if dataset_name == "wiki_lingua":
         dataset = pd.DataFrame(dataset["source"])
@@ -106,10 +102,10 @@ def get_print_simi(
     dataset_name: str,
     split: str = "train",
     stats_to_compute: List[str] = ["mean", "max", "min"],
-    p: float = 1,
+    data_proportion: float = 1.0,
 ) -> None:
 
-    similarity = get_simi(dataset_name, split, p)
+    similarity = get_simi(dataset_name, split, data_proportion)
 
     # print similariity stats
     print_simi(stats_to_compute, dataset_name, similarity)

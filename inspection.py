@@ -3,8 +3,8 @@ import pandas as pd
 import en_core_web_sm
 from tqdm import tqdm
 from collections import namedtuple
-from LoadData import load_data
 from typing import NamedTuple, List
+from LoadData import load_data
 
 
 def spacy_token(samples: List[str]) -> NamedTuple:
@@ -20,12 +20,8 @@ def spacy_token(samples: List[str]) -> NamedTuple:
         disable=("tok2vec", "tagger", "lemmatizer", "ner")
     )  # Disabling components for only tokenization use.
 
-    # lens = [len(nlp(token)) for token in tqdm(tokens)]
     tokens = list(tqdm(nlp.pipe(samples, n_process=8), total=len(samples)))
     lens = [len(token) for token in (iter(tokens))]
-
-    # write data into .txt file
-    # write_csv("length.txt", lens)
 
     stats.lens = np.array(lens)
     stats.mean = np.mean(lens)
@@ -39,10 +35,9 @@ def whitespace_token(samples: List[str]) -> NamedTuple:
 
     stats = namedtuple("stats", "mean median std lens")
 
+    # split the sentences using pandas str whitespace split
+    # get the tokens length of each row of sample
     lens = samples.str.split().str.len()
-
-    # write data into .txt file
-    # write_csv("length.txt", lens)
 
     stats.lens = lens
     stats.mean = np.mean(lens)
@@ -53,6 +48,10 @@ def whitespace_token(samples: List[str]) -> NamedTuple:
 
 
 def format_tuning(dataset):
+    """
+    Input: a huggingface dataset with feature type of Sequence
+    Output: split features as source and target and combine sentences
+    """
     try:
         if (
             dataset.features["source"].feature._type == "Value"
@@ -110,7 +109,10 @@ def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
 
 
 def print_lens(
-    stats, stats_to_compute, dataset_name: str, tokenization_method: str = "whitespace"
+    stats: NamedTuple,
+    stats_to_compute: List[str],
+    dataset_name: str,
+    tokenization_method: str = "whitespace",
 ) -> None:
 
     print(f"********{tokenization_method}********")
@@ -140,9 +142,9 @@ def get_lens(
     dataset_name: str,
     split: str = "train",
     tokenization_method: str = "whitespace",
-    p: float = 1,
+    data_proportion: float = 1.0,
 ) -> NamedTuple:
-    dataset = load_data(dataset_name, split, p)
+    dataset = load_data(dataset_name, split, data_proportion)
     stats = lens_cal(dataset, tokenization_method)
 
     return stats
@@ -159,7 +161,7 @@ def get_print_lens(
         "std",
         "compression_ratio",
     ],
-    p: float = 1,
+    data_proportion: float = 1.0,
 ) -> None:
-    stats = get_lens(dataset_name, split, tokenization_method, p)
+    stats = get_lens(dataset_name, split, tokenization_method, data_proportion)
     print_lens(stats, stats_to_compute, dataset_name, tokenization_method)
