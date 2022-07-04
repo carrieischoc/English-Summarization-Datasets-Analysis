@@ -6,22 +6,34 @@ from typing import List
 from datasets import load_dataset
 
 
-
 def get_args():
     # get command arguments
     parser = argparse.ArgumentParser(
         description="Get different information of different datasets"
     )
-    parser.add_argument("-d","--dataset", nargs=2, type=str, help="name of dataset, split")
     parser.add_argument(
-        "-t","--tokenmethod", nargs=1, type=str, help="tokenization method: whitespace, spacy"
+        "-d", "--dataset", nargs=2, type=str, help="name of dataset, split"
     )
-    parser.add_argument("-s","--stats", nargs=1, type=str, help="type of stats: simi, len")
+    parser.add_argument(
+        "-t",
+        "--tokenmethod",
+        nargs=1,
+        type=str,
+        help="tokenization method: whitespace, spacy",
+    )
+    parser.add_argument(
+        "-s", "--stats", nargs=1, type=str, help="type of stats: simi, len"
+    )
     # parser.add_argument(
     #     "--sf", nargs=1, type=str, help="if save the figure: 1, otherwise: 0"
     # )
     parser.add_argument(
-        "-p","--proporofsa", nargs="?", type=float, const=1, help="proportion of samples"
+        "-p",
+        "--proporofsa",
+        nargs="?",
+        type=float,
+        const=1,
+        help="proportion of samples",
     )
 
     args = parser.parse_args()
@@ -36,10 +48,10 @@ def rename_datasets(dataset):
 
 
 def load_data(dataset_name: str, split: str = "train", data_proportion: float = 1.0):
-    
-    with open('datasets_dict.txt') as f:
+
+    with open("datasets_dict.txt") as f:
         dicts = f.read()
-      
+
     # reconstructing the data as a dictionary
     version_dic = json.loads(dicts)
     version = version_dic.get(dataset_name)

@@ -16,8 +16,7 @@ if __name__ == "__main__":
 
     if args.sts[0] == "len":
 
-        get_print_lens(args.ds[0], args.ds[1], args.tm[0], p=args.p)
+        get_print_lens(args.d[0], args.d[1], args.t[0], p=args.p)
 
     if args.sts[0] == "simi":
-        get_print_simi(args.ds[0], args.ds[1], p=args.p)
-       
+        get_print_simi(args.d[0], args.d[1], p=args.p)
