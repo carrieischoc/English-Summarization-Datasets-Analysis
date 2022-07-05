@@ -1,35 +1,48 @@
-import numpy as np
 import argparse
-import csv
 import json
+import numpy as np
 from typing import List
 from datasets import load_dataset
 
 
+def read_js(filename):
+    with open(filename) as f:
+        js = json.load(f)
+
+    return js
+
 def get_args():
+
+    # get dataset names    
+    ds_names = read_js("ds_name_list.json")
+
     # get command arguments
     parser = argparse.ArgumentParser(
         description="Get different information of different datasets"
     )
     parser.add_argument(
-        "-d", "--dataset", nargs=2, type=str, help="name of dataset, split"
+        "-d", "--dataset", nargs=1, type=str, choices=ds_names, help="name of dataset"
+    )
+    parser.add_argument(
+        "--split", nargs=1, type=str, help="split"
     )
     parser.add_argument(
         "-t",
-        "--tokenmethod",
+        "--token_method", 
+        choices=['whitespace', 'spacy'],
         nargs=1,
         type=str,
         help="tokenization method: whitespace, spacy",
     )
     parser.add_argument(
-        "-s", "--stats", nargs=1, type=str, help="type of stats: simi, len"
+        "--stats", nargs=1, type=str, choices=['similarity', 'length'], help="type of stats: similarity, length"
     )
     # parser.add_argument(
     #     "--sf", nargs=1, type=str, help="if save the figure: 1, otherwise: 0"
     # )
     parser.add_argument(
         "-p",
-        "--proporofsa",
+        "--sample_propor",
         nargs="?",
         type=float,
         const=1,
@@ -49,11 +62,9 @@ def rename_datasets(dataset):
 
 def load_data(dataset_name: str, split: str = "train", data_proportion: float = 1.0):
 
-    with open("datasets_dict.txt") as f:
-        dicts = f.read()
+    version_dic = read_js("ds_version_dict.json")
 
     # reconstructing the data as a dictionary
-    version_dic = json.loads(dicts)
     version = version_dic.get(dataset_name)
 
     if dataset_name == "scitldr_A" or dataset_name == "scitldr_F":
@@ -71,23 +82,8 @@ def load_data(dataset_name: str, split: str = "train", data_proportion: float = 
     # use a certain proportion of samples
     if data_proportion != 1:
         n = int(dataset.num_rows * data_proportion)
-        dataset = dataset.select(np.random.randint(dataset.num_rows, size=n))
+        dataset = dataset.select(np.random.choice(dataset.num_rows,size=n,replace=False))
 
     return dataset
 
 
-def write_csv(filename, data: List):
-    with open(filename, "a+", newline="\n", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(data)
-
-
-def read_csv(filename):
-    with open(filename, "r", encoding="utf-8") as f:
-        reader = csv.reader(f)
-        data = list(reader)
-
-    for i in range(len(data)):
-        data[i] = list(map(eval, data[i]))
-
-    return data
