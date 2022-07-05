@@ -1,9 +1,11 @@
+from collections import namedtuple
+from typing import NamedTuple, List
+from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import en_core_web_sm
-from tqdm import tqdm
-from collections import namedtuple
-from typing import NamedTuple, List
+
+
 from LoadData import load_data
 
 
@@ -97,13 +99,13 @@ def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
         stats_src = spacy_token(dataset["source"])
         stats_tg = spacy_token(dataset["target"])
 
-    compression_ratio = np.mean(stats_src.lens / stats_tg.lens)
+    mean_ratio = np.mean(stats_src.lens / stats_tg.lens)
 
     stats_attr = namedtuple("stats_attr", "mean median std lens")
-    stats_all = namedtuple("stats", "src tg compression_ratio SampleNum")
+    stats_all = namedtuple("stats", "src tg mean_ratio SampleNum")
     src = stats_attr(stats_src.mean, stats_src.median, stats_src.std, stats_src.lens)
     tg = stats_attr(stats_tg.mean, stats_tg.median, stats_tg.std, stats_tg.lens)
-    stats = stats_all(src, tg, compression_ratio, dataset.shape[0])
+    stats = stats_all(src, tg, mean_ratio, dataset.shape[0])
 
     return stats
 
@@ -132,9 +134,9 @@ def print_lens(
         print(
             f"[{dataset_name}] Standard Deviation of article & summary: {stats.src.std:.2f}, {stats.tg.std:.2f}"
         )
-    if "compression_ratio" in stats_to_compute:
+    if "mean_ratio" in stats_to_compute:
         print(
-            f"[{dataset_name}] ratio of article/summary: {stats.compression_ratio:.2f}"
+            f"[{dataset_name}] mean of compression ratios of article/summary: {stats.mean_ratio:.2f}"
         )
 
 
@@ -159,7 +161,7 @@ def get_print_lens(
         "mean",
         "median",
         "std",
-        "compression_ratio",
+        "mean_ratio",
     ],
     data_proportion: float = 1.0,
 ) -> None:
