@@ -1,0 +1,11 @@
+# pip install packages with 'python -m pip install'
+numpy
+pandas
+tqdm
+datasets
+spacy
+seaborn
+# other install instructions wiht en_core_web_sm
+
+# Direct dependency for aligner method
+git+https://github.com/dennlinger/aspect-summaries@main#egg=summaries
