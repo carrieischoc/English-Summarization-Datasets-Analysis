@@ -9,7 +9,9 @@ if __name__ == "__main__":
 
     if args.stats[0] == "length":
 
-        get_print_lens(args.dataset[0], args.split[0], args.token_method[0], p=args.sample_propor)
+        get_print_lens(
+            args.dataset[0], args.split[0], args.token_method[0], p=args.sample_propor
+        )
 
     if args.stats[0] == "similarity":
         get_print_simi(args.dataset[0], args.split[0], p=args.sample_propor)

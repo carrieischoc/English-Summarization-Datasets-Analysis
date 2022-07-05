@@ -11,9 +11,10 @@ def read_js(filename):
 
     return js
 
+
 def get_args():
 
-    # get dataset names    
+    # get dataset names
     ds_names = read_js("ds_name_list.json")
 
     # get command arguments
@@ -23,19 +24,21 @@ def get_args():
     parser.add_argument(
         "-d", "--dataset", nargs=1, type=str, choices=ds_names, help="name of dataset"
     )
-    parser.add_argument(
-        "--split", nargs=1, type=str, help="split"
-    )
+    parser.add_argument("--split", nargs=1, type=str, help="split")
     parser.add_argument(
         "-t",
-        "--token_method", 
-        choices=['whitespace', 'spacy'],
+        "--token_method",
+        choices=["whitespace", "spacy"],
         nargs=1,
         type=str,
         help="tokenization method: whitespace, spacy",
     )
     parser.add_argument(
-        "--stats", nargs=1, type=str, choices=['similarity', 'length'], help="type of stats: similarity, length"
+        "--stats",
+        nargs=1,
+        type=str,
+        choices=["similarity", "length"],
+        help="type of stats: similarity, length",
     )
     # parser.add_argument(
     #     "--sf", nargs=1, type=str, help="if save the figure: 1, otherwise: 0"
@@ -82,8 +85,8 @@ def load_data(dataset_name: str, split: str = "train", data_proportion: float = 
     # use a certain proportion of samples
     if data_proportion != 1:
         n = int(dataset.num_rows * data_proportion)
-        dataset = dataset.select(np.random.choice(dataset.num_rows,size=n,replace=False))
+        dataset = dataset.select(
+            np.random.choice(dataset.num_rows, size=n, replace=False)
+        )
 
     return dataset
-
-
