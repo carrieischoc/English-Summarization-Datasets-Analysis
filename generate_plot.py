@@ -1,10 +1,10 @@
 from typing import List
 import pandas as pd
 import seaborn as sns
-from matplotlib import pyplot as plt
-from numpy import median
 import numpy as np
-from LoadData import get_args
+from numpy import median
+from matplotlib import pyplot as plt
+from LoadData import get_args, read_js
 from inspection import get_lens
 from similarity import get_simi
 
@@ -242,7 +242,7 @@ def plot_pos(pos: List, name: str, savefig=True):
         binrange=(0, 1),
         color="green",
         line_kws=dict(lw=1.5),
-        bins=50
+        bins=50,
     )
     plt.title(name)
     if savefig:
@@ -265,42 +265,39 @@ def compute_show_ratio(sts: List, name: str, savefig=True):
 if __name__ == "__main__":
     args = get_args()
 
-    datasets = [
-        "cnn_dailymail",
-        "wiki_lingua",
-        "xsum",
-        "scitldr_A",
-        "scitldr_F",
-        "billsum",
-    ]
+    datasets = read_js("ds_name_list.json")
     cls_sts = []
 
-    if args.sts[0] == "len":
+    if args.stats[0] == "length":
         cls_names = ["ref", "sum"]
 
         for dataset in datasets:
-            sts = get_lens(dataset, args.ds[1], args.tm[0], args.p)
+            sts = get_lens(
+                dataset, args.split[0], args.token_method[0], args.sample_propor
+            )
             cls_sts.append(sts.src.lens)
             cls_sts.append(sts.tg.lens)
 
             # Histogram of compression ratio with vertical lines (mean - red, max - green, median - black, std - dashed gray)
-            compute_show_ratio([sts.src.lens, sts.tg.lens], args.tm[0] + "_len_" + dataset)
+            compute_show_ratio(
+                [sts.src.lens, sts.tg.lens], args.token_method[0] + "_len_" + dataset
+            )
 
         df = make_dfs(cls_sts, cls_names, datasets, "length")
 
         # draw all datasets in one of (w/o logscale) stripplot marked with mean and std (black), median (orange).
-        draw_strip(df, args.tm[0] + "_len", logscale=False, showm=False)
-        draw_strip(df, args.tm[0] + "_len")
+        draw_strip(df, args.token_method[0] + "_len", logscale=False, showm=False)
+        draw_strip(df, args.token_method[0] + "_len")
 
         # draw violin plot of reference/summary marked with mean and std (green), median (orange).
-        draw_violin(df[df["class"] == "ref"], args.tm[0] + "_len_ref")
-        draw_violin(df[df["class"] == "sum"], args.tm[0] + "_len_sum")
+        draw_violin(df[df["class"] == "ref"], args.token_method[0] + "_len_ref")
+        draw_violin(df[df["class"] == "sum"], args.token_method[0] + "_len_sum")
 
-    if args.sts[0] == "simi":
+    if args.stats[0] == "similarity":
         cls_names = ["mean", "max", "min"]
 
         for dataset in datasets:
-            sts = get_simi(dataset, args.ds[1], args.p)
+            sts = get_simi(dataset, args.split[0], args.sample_propor)
             cls_sts.append(sts.mean)
             cls_sts.append(sts.max)
             cls_sts.append(sts.min)
