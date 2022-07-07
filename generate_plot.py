@@ -1,3 +1,4 @@
+import os
 from typing import List
 import pandas as pd
 import seaborn as sns
@@ -8,13 +9,16 @@ from LoadData import get_args, read_js
 from inspection import get_lens
 from similarity import get_simi
 
+# create folder plots to store figures if not exist
+os.makedirs("./plots/", exist_ok=True)
+
 sns.set_theme(style="white", palette="pastel")
 sns.despine(left=True)
 paper_rc = {"lines.linewidth": 0.5, "lines.markersize": 15}
 sns.set_context("paper", rc=paper_rc)
 
 
-def make_1df(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
+def stats2pd_1class(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
     df = pd.DataFrame()
     df[fe] = sts
     df = df.explode(fe, ignore_index=True)
@@ -24,8 +28,8 @@ def make_1df(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
     return df
 
 
-def make_dfs(
-    cls_sts: List, cls_names: List[str], ds_names: List[str], fe: str
+def stats2pd_allClasses(
+    stats_of_class: List, cls_names: List[str], ds_names: List[str], fe: str
 ) -> pd.DataFrame:
     df_list = []
     cls_n = len(cls_names)
@@ -33,8 +37,8 @@ def make_dfs(
 
     for i in range(ds_n):
         for j in range(cls_n):
-            df_ = make_1df(ds_names[i], fe, cls_names[j], cls_sts[i * cls_n + j])
-            df_list.append(df_)
+            df_tmp = stats2pd_1class(ds_names[i], fe, cls_names[j], stats_of_class[i * cls_n + j])
+            df_list.append(df_tmp)
 
     df = pd.concat(df_list, axis=0)
     df = df.reset_index(drop=True)
@@ -46,8 +50,8 @@ def make_dfs(
 def draw_violin(
     df: pd.DataFrame,
     name: str,
-    y_: str = "length",
-    hue_: str = "class",
+    y: str = "length",
+    hue: str = "class",
     savefig=True,
     showm=True,
 ):
@@ -56,8 +60,8 @@ def draw_violin(
     sns.violinplot(
         data=df,
         x="dataset",
-        y=y_,
-        hue=hue_,
+        y=y,
+        hue=hue,
         showmeans=True,
         ax=ax,
         scale="count",
@@ -68,12 +72,12 @@ def draw_violin(
     )
 
     if showm:
-        if y_ == "length":
+        if y == "length":
             sns.pointplot(
                 data=df,
                 x="dataset",
-                y=y_,
-                hue=hue_,
+                y=y,
+                hue=hue,
                 dodge=True,
                 capsize=0.15,
                 ci="sd",
@@ -85,8 +89,8 @@ def draw_violin(
             sns.pointplot(
                 data=df,
                 x="dataset",
-                y=y_,
-                hue=hue_,
+                y=y,
+                hue=hue,
                 dodge=True,
                 capsize=0.2,
                 ci=0,
@@ -96,12 +100,12 @@ def draw_violin(
                 scale=0,
                 palette={"ref": "#FF6103", "sum": "#FF6103"},
             )
-        if y_ == "similarity":
+        elif y == "similarity":
             sns.pointplot(
                 data=df,
                 x="dataset",
-                y=y_,
-                hue=hue_,
+                y=y,
+                hue=hue,
                 dodge=0.6,
                 capsize=0.15,
                 ci="sd",
@@ -113,8 +117,8 @@ def draw_violin(
             sns.pointplot(
                 data=df,
                 x="dataset",
-                y=y_,
-                hue=hue_,
+                y=y,
+                hue=hue,
                 dodge=0.6,
                 capsize=0.2,
                 ci=0,
@@ -124,14 +128,14 @@ def draw_violin(
                 scale=0,
                 palette={"mean": "#FF6103", "max": "#FF6103", "min": "#FF6103"},
             )
-            # sns.boxplot(data=df, x="dataset", y=y_, hue=hue_,showbox=False,showmeans=True,meanline=True,
-            # showcaps=False, ax=ax,showfliers=False,zorder=10,whiskerprops={'visible': False},meanprops={'color': 'yellow', 'ls': '-', 'lw': 1},
-            # medianprops={'color': 'red', 'ls': '-', 'lw': 1})
+        else:
+            raise ValueError("Invalid parameter for 'y_' specified!")
+
 
     handles, labels = ax.get_legend_handles_labels()
-    if y_ == "length":
+    if y == "length":
         labels_n = 1
-    if y_ == "similarity":
+    if y == "similarity":
         labels_n = 3
 
     ax.legend(
@@ -146,12 +150,13 @@ def draw_violin(
         plt.savefig(f"plots/{name}_violin.png", bbox_inches="tight")
 
 
+
 def draw_strip(
     df: pd.DataFrame,
     name: str,
     logscale=True,
-    y_: str = "length",
-    hue_: str = "class",
+    y: str = "length",
+    hue: str = "class",
     savefig=True,
     showm=True,
 ):
@@ -160,25 +165,21 @@ def draw_strip(
     sns.stripplot(
         data=df,
         x="dataset",
-        y=y_,
-        hue=hue_,
+        y=y,
+        hue=hue,
         dodge=True,
         size=2,
         jitter=True,
         ax=ax,
         palette="YlGnBu_d",
     )
-    # sns.boxplot(data=df, x="dataset", y=y_, hue=hue_,showbox=False,showmeans=True,meanline=True,
-    #         showcaps=False, ax=ax,showfliers=False,zorder=10,
-    #         whiskerprops={'visible': False},meanprops={'color': 'k', 'ls': '-', 'lw': 2},
-    #         medianprops={'color': 'red', 'ls': '-', 'lw': 2})
 
     if showm:
         sns.pointplot(
             data=df,
             x="dataset",
-            y=y_,
-            hue=hue_,
+            y=y,
+            hue=hue,
             capsize=0.15,
             ci="sd",
             join=False,
@@ -189,8 +190,8 @@ def draw_strip(
         sns.pointplot(
             data=df,
             x="dataset",
-            y=y_,
-            hue=hue_,
+            y=y,
+            hue=hue,
             capsize=0.2,
             ci=0,
             join=False,
@@ -215,16 +216,19 @@ def draw_strip(
             plt.savefig(f"plots/{name}_strip.png", bbox_inches="tight")
 
 
-def draw_bar(df: pd.DataFrame, logscale=True, y_: str = "length", hue_: str = "class"):
-    ax = sns.barplot(
+def draw_bar(df: pd.DataFrame,name, logscale=True, y: str = "length", hue: str = "class", savefig=True):
+    _, ax = plt.subplots()
+
+    sns.barplot(
         data=df,
         x="dataset",
-        y=y_,
-        hue=hue_,
+        y=y,
+        hue=hue,
         linewidth=0.5,
         ci="sd",
         capsize=0.1,
         palette="YlGnBu_d",
+        ax=ax
     )
 
     if logscale:
@@ -232,8 +236,15 @@ def draw_bar(df: pd.DataFrame, logscale=True, y_: str = "length", hue_: str = "c
 
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
 
+    if savefig:
+        if logscale:
+            plt.savefig(f"plots/{name}_log_bar.png", bbox_inches="tight")
+        else:
+            plt.savefig(f"plots/{name}_bar.png", bbox_inches="tight")
+
 
 def plot_pos(pos: List, name: str, savefig=True):
+    _, ax = plt.subplots()
 
     sns.histplot(
         pos,
@@ -243,20 +254,24 @@ def plot_pos(pos: List, name: str, savefig=True):
         color="green",
         line_kws=dict(lw=1.5),
         bins=50,
+        ax=ax
     )
     plt.title(name)
     if savefig:
         plt.savefig(f"plots/{name}_pos.png")
 
 
-def compute_show_ratio(sts: List, name: str, savefig=True):
+def cal_show_CompressionRatio(sts: List, name: str, savefig=True):
+    _, ax = plt.subplots()
+
     compression_ratio = sts[0] / sts[1]
     bw = np.ceil(np.max(compression_ratio) / 25)
-    sns.histplot(compression_ratio, color="green", binwidth=bw)
-    plt.axvline(x=np.mean(compression_ratio), label="mean", color="red")
-    plt.axvline(x=np.max(compression_ratio), label="mean", color="green")
-    plt.axvline(x=np.median(compression_ratio), label="median", color="k")
-    plt.axvline(x=np.std(compression_ratio), label="std", color="gray", linestyle="--")
+
+    sns.histplot(compression_ratio, color="green", binwidth=bw,ax=ax)
+    ax.axvline(x=np.mean(compression_ratio), label="mean", color="red")
+    ax.axvline(x=np.max(compression_ratio), label="mean", color="green")
+    ax.axvline(x=np.median(compression_ratio), label="median", color="k")
+    ax.axvline(x=np.std(compression_ratio), label="std", color="gray", linestyle="--")
     plt.title(name)
     if savefig:
         plt.savefig(f"plots/{name}_cpRatio.png")
@@ -266,7 +281,7 @@ if __name__ == "__main__":
     args = get_args()
 
     datasets = read_js("ds_name_list.json")
-    cls_sts = []
+    stats_of_class = []
 
     if args.stats[0] == "length":
         cls_names = ["ref", "sum"]
@@ -275,15 +290,15 @@ if __name__ == "__main__":
             sts = get_lens(
                 dataset, args.split[0], args.token_method[0], args.sample_propor
             )
-            cls_sts.append(sts.src.lens)
-            cls_sts.append(sts.tg.lens)
+            stats_of_class.append(sts.src.lens)
+            stats_of_class.append(sts.tg.lens)
 
             # Histogram of compression ratio with vertical lines (mean - red, max - green, median - black, std - dashed gray)
-            compute_show_ratio(
+            cal_show_CompressionRatio(
                 [sts.src.lens, sts.tg.lens], args.token_method[0] + "_len_" + dataset
             )
 
-        df = make_dfs(cls_sts, cls_names, datasets, "length")
+        df = stats2pd_allClasses(stats_of_class, cls_names, datasets, "length")
 
         # draw all datasets in one of (w/o logscale) stripplot marked with mean and std (black), median (orange).
         draw_strip(df, args.token_method[0] + "_len", logscale=False, showm=False)
@@ -298,14 +313,14 @@ if __name__ == "__main__":
 
         for dataset in datasets:
             sts = get_simi(dataset, args.split[0], args.sample_propor)
-            cls_sts.append(sts.mean)
-            cls_sts.append(sts.max)
-            cls_sts.append(sts.min)
+            stats_of_class.append(sts.mean)
+            stats_of_class.append(sts.max)
+            stats_of_class.append(sts.min)
 
             # Plot of distribution of relative position of most similar sentence in article
             plot_pos(sts.pos, dataset)
 
-        df = make_dfs(cls_sts, cls_names, datasets, "similarity")
+        df = stats2pd_allClasses(stats_of_class, cls_names, datasets, "similarity")
 
         # draw violin plot of distribution of mean, max, min of similarity, with mean and std (green), median (red)
-        draw_violin(df, "simi", y_="similarity")
+        draw_violin(df, "simi", y="similarity")
