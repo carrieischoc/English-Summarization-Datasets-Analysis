@@ -37,7 +37,9 @@ def stats2pd_allClasses(
 
     for i in range(ds_n):
         for j in range(cls_n):
-            df_tmp = stats2pd_1class(ds_names[i], fe, cls_names[j], stats_of_class[i * cls_n + j])
+            df_tmp = stats2pd_1class(
+                ds_names[i], fe, cls_names[j], stats_of_class[i * cls_n + j]
+            )
             df_list.append(df_tmp)
 
     df = pd.concat(df_list, axis=0)
@@ -52,8 +54,8 @@ def draw_violin(
     name: str,
     y: str = "length",
     hue: str = "class",
-    savefig=True,
-    showm=True,
+    savefig: bool = True,
+    showm: bool = True,
 ):
     _, ax = plt.subplots()
 
@@ -73,7 +75,7 @@ def draw_violin(
 
     if showm:
         if y == "length":
-            sns.pointplot(
+            sns.pointplot(  # mean and std shown with bars
                 data=df,
                 x="dataset",
                 y=y,
@@ -86,7 +88,7 @@ def draw_violin(
                 scale=1.2,
                 palette={"ref": "#76EE00", "sum": "#76EE00"},
             )
-            sns.pointplot(
+            sns.pointplot(  # estimator is median, shown without bars
                 data=df,
                 x="dataset",
                 y=y,
@@ -101,7 +103,7 @@ def draw_violin(
                 palette={"ref": "#FF6103", "sum": "#FF6103"},
             )
         elif y == "similarity":
-            sns.pointplot(
+            sns.pointplot(  # mean and std shown with bars
                 data=df,
                 x="dataset",
                 y=y,
@@ -114,7 +116,7 @@ def draw_violin(
                 scale=1.2,
                 palette={"mean": "#76EE00", "max": "#76EE00", "min": "#76EE00"},
             )
-            sns.pointplot(
+            sns.pointplot(  # estimator is median, shown without bars
                 data=df,
                 x="dataset",
                 y=y,
@@ -130,7 +132,6 @@ def draw_violin(
             )
         else:
             raise ValueError("Invalid parameter for 'y_' specified!")
-
 
     handles, labels = ax.get_legend_handles_labels()
     if y == "length":
@@ -150,15 +151,14 @@ def draw_violin(
         plt.savefig(f"plots/{name}_violin.png", bbox_inches="tight")
 
 
-
 def draw_strip(
     df: pd.DataFrame,
     name: str,
     logscale=True,
     y: str = "length",
     hue: str = "class",
-    savefig=True,
-    showm=True,
+    savefig: bool = True,
+    showm: bool = True,
 ):
     _, ax = plt.subplots()
 
@@ -175,7 +175,7 @@ def draw_strip(
     )
 
     if showm:
-        sns.pointplot(
+        sns.pointplot(  # mean and std shown with bars
             data=df,
             x="dataset",
             y=y,
@@ -187,7 +187,7 @@ def draw_strip(
             scale=1.2,
             palette={"ref": "k", "sum": "k"},
         )
-        sns.pointplot(
+        sns.pointplot(  # estimator is median, shown without bars
             data=df,
             x="dataset",
             y=y,
@@ -216,7 +216,14 @@ def draw_strip(
             plt.savefig(f"plots/{name}_strip.png", bbox_inches="tight")
 
 
-def draw_bar(df: pd.DataFrame,name, logscale=True, y: str = "length", hue: str = "class", savefig=True):
+def draw_bar(
+    df: pd.DataFrame,
+    name: str,
+    y: str = "length",
+    hue: str = "class",
+    savefig: bool = True,
+    logscale: bool = True,
+):
     _, ax = plt.subplots()
 
     sns.barplot(
@@ -228,7 +235,7 @@ def draw_bar(df: pd.DataFrame,name, logscale=True, y: str = "length", hue: str =
         ci="sd",
         capsize=0.1,
         palette="YlGnBu_d",
-        ax=ax
+        ax=ax,
     )
 
     if logscale:
@@ -243,7 +250,7 @@ def draw_bar(df: pd.DataFrame,name, logscale=True, y: str = "length", hue: str =
             plt.savefig(f"plots/{name}_bar.png", bbox_inches="tight")
 
 
-def plot_pos(pos: List, name: str, savefig=True):
+def plot_pos(pos: List, name: str, savefig: bool = True):
     _, ax = plt.subplots()
 
     sns.histplot(
@@ -254,27 +261,35 @@ def plot_pos(pos: List, name: str, savefig=True):
         color="green",
         line_kws=dict(lw=1.5),
         bins=50,
-        ax=ax
+        ax=ax,
     )
     plt.title(name)
     if savefig:
         plt.savefig(f"plots/{name}_pos.png")
 
 
-def cal_show_CompressionRatio(sts: List, name: str, savefig=True):
+def cal_show_CompressionRatio(
+    sts: List, name: str, savefig: bool = True, logscale: bool = True
+):
     _, ax = plt.subplots()
 
     compression_ratio = sts[0] / sts[1]
     bw = np.ceil(np.max(compression_ratio) / 25)
 
-    sns.histplot(compression_ratio, color="green", binwidth=bw,ax=ax)
+    sns.histplot(compression_ratio, color="green", binwidth=bw, ax=ax)
     ax.axvline(x=np.mean(compression_ratio), label="mean", color="red")
     ax.axvline(x=np.max(compression_ratio), label="mean", color="green")
     ax.axvline(x=np.median(compression_ratio), label="median", color="k")
     ax.axvline(x=np.std(compression_ratio), label="std", color="gray", linestyle="--")
     plt.title(name)
+
+    if logscale:
+        ax.set_yscale("log")
     if savefig:
-        plt.savefig(f"plots/{name}_cpRatio.png")
+        if logscale:
+            plt.savefig(f"plots/{name}_log_cpRatio.png")
+        else:
+            plt.savefig(f"plots/{name}_cpRatio.png")
 
 
 if __name__ == "__main__":
@@ -293,15 +308,20 @@ if __name__ == "__main__":
             stats_of_class.append(sts.src.lens)
             stats_of_class.append(sts.tg.lens)
 
-            # Histogram of compression ratio with vertical lines (mean - red, max - green, median - black, std - dashed gray)
+            # Histogram of compression ratio (w/o log scale) with vertical lines (mean - red, max - green, median - black, std - dashed gray)
             cal_show_CompressionRatio(
                 [sts.src.lens, sts.tg.lens], args.token_method[0] + "_len_" + dataset
+            )
+            cal_show_CompressionRatio(
+                [sts.src.lens, sts.tg.lens],
+                args.token_method[0] + "_len_" + dataset,
+                logscale=False,
             )
 
         df = stats2pd_allClasses(stats_of_class, cls_names, datasets, "length")
 
         # draw all datasets in one of (w/o logscale) stripplot marked with mean and std (black), median (orange).
-        draw_strip(df, args.token_method[0] + "_len", logscale=False, showm=False)
+        draw_strip(df, args.token_method[0] + "_len", logscale=False)
         draw_strip(df, args.token_method[0] + "_len")
 
         # draw violin plot of reference/summary marked with mean and std (green), median (orange).
