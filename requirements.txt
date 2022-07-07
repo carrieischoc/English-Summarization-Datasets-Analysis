@@ -4,6 +4,7 @@ pandas
 tqdm
 datasets
 spacy
+seaborn
 # other install instructions wiht en_core_web_sm
 
 # Direct dependency for aligner method
