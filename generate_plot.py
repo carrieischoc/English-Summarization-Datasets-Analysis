@@ -18,7 +18,7 @@ paper_rc = {"lines.linewidth": 0.5, "lines.markersize": 15}
 sns.set_context("paper", rc=paper_rc)
 
 
-def stats2pd_1class(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
+def convert_one_class_to_dataframe(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
     df = pd.DataFrame()
     df[fe] = sts
     df = df.explode(fe, ignore_index=True)
@@ -28,7 +28,7 @@ def stats2pd_1class(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
     return df
 
 
-def stats2pd_allClasses(
+def convert_classes_to_dataframe(
     stats_of_class: List, cls_names: List[str], ds_names: List[str], fe: str
 ) -> pd.DataFrame:
     df_list = []
@@ -37,7 +37,7 @@ def stats2pd_allClasses(
 
     for i in range(ds_n):
         for j in range(cls_n):
-            df_tmp = stats2pd_1class(
+            df_tmp = convert_one_class_to_dataframe(
                 ds_names[i], fe, cls_names[j], stats_of_class[i * cls_n + j]
             )
             df_list.append(df_tmp)
@@ -131,7 +131,7 @@ def draw_violin(
                 palette={"mean": "#FF6103", "max": "#FF6103", "min": "#FF6103"},
             )
         else:
-            raise ValueError("Invalid parameter for 'y_' specified!")
+            raise ValueError("Invalid parameter for 'y' specified!")
 
     handles, labels = ax.get_legend_handles_labels()
     if y == "length":
@@ -278,7 +278,7 @@ def cal_show_CompressionRatio(
 
     sns.histplot(compression_ratio, color="green", binwidth=bw, ax=ax)
     ax.axvline(x=np.mean(compression_ratio), label="mean", color="red")
-    ax.axvline(x=np.max(compression_ratio), label="mean", color="green")
+    ax.axvline(x=np.max(compression_ratio), label="max", color="green")
     ax.axvline(x=np.median(compression_ratio), label="median", color="k")
     ax.axvline(x=np.std(compression_ratio), label="std", color="gray", linestyle="--")
     plt.title(name)
@@ -318,7 +318,7 @@ if __name__ == "__main__":
                 logscale=False,
             )
 
-        df = stats2pd_allClasses(stats_of_class, cls_names, datasets, "length")
+        df = convert_classes_to_dataframe(stats_of_class, cls_names, datasets, "length")
 
         # draw all datasets in one of (w/o logscale) stripplot marked with mean and std (black), median (orange).
         draw_strip(df, args.token_method[0] + "_len", logscale=False)
@@ -340,7 +340,7 @@ if __name__ == "__main__":
             # Plot of distribution of relative position of most similar sentence in article
             plot_pos(sts.pos, dataset)
 
-        df = stats2pd_allClasses(stats_of_class, cls_names, datasets, "similarity")
+        df = convert_classes_to_dataframe(stats_of_class, cls_names, datasets, "similarity")
 
         # draw violin plot of distribution of mean, max, min of similarity, with mean and std (green), median (red)
         draw_violin(df, "simi", y="similarity")
