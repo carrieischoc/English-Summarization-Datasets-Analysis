@@ -1,8 +1,9 @@
 import argparse
 import json
 import numpy as np
+import pandas as pd
 from typing import List
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 
 
 def read_js(filename):
@@ -48,7 +49,8 @@ def get_args():
         "--sample_propor",
         nargs="?",
         type=float,
-        const=1,
+        const=1.0,
+        default=1.0,
         help="proportion of samples",
     )
 
@@ -58,8 +60,51 @@ def get_args():
 
 
 def rename_datasets(dataset):
-    dataset = dataset.rename_column(dataset.column_names[0], "source")
-    dataset = dataset.rename_column(dataset.column_names[1], "target")
+
+    source_names = read_js("source_names.json")
+    target_names = read_js("target_names.json")
+
+    flag_src = False  # check if source is renamed
+    flag_tg = False  # check if target is renamed
+    for col_name in dataset.column_names:
+        if col_name in source_names:
+            flag_src = True
+            if col_name == "source":
+                pass
+            else:
+                dataset = dataset.rename_column(col_name, "source")
+        elif col_name in target_names:
+            flag_tg = True
+            if col_name == "target":
+                pass
+            else:
+                dataset = dataset.rename_column(col_name, "target")
+    if flag_src == False:
+        raise ValueError(
+            "Invalid name of source! Please add names in source_names.json."
+        )
+    if flag_tg == False:
+        try:
+            if dataset.features["source"].feature._type == "Value":
+                raise NameError(
+                    "Invalid name of target! Please add names in target_names.json."
+                )
+        # check if source and target are encapsulated
+        except AttributeError:
+            if len(dataset.features["source"].feature) > 1:
+                dataset = pd.DataFrame(dataset["source"])
+                dataset = Dataset.from_pandas(dataset)
+                dataset = rename_datasets(dataset)
+
+    return dataset
+
+
+def remove_empty(dataset):
+    dataset = dataset.filter(lambda x: x["source"] != [])
+    dataset = dataset.filter(lambda x: x["source"] != "")
+    dataset = dataset.filter(lambda x: x["target"] != [])
+    dataset = dataset.filter(lambda x: x["target"] != "")
+
     return dataset
 
 
@@ -75,15 +120,14 @@ def load_data(dataset_name: str, split: str = "train", data_proportion: float = 
 
     dataset = load_dataset(dataset_name, version, split=split)
 
-    if dataset_name == "wiki_lingua":
-        dataset = dataset.rename_column("article", "source")
-    elif dataset_name == "scitldr":
-        pass
-    else:
-        dataset = rename_datasets(dataset)
+    # rename dataset columns as source and target
+    dataset = rename_datasets(dataset)
+
+    # remove empty examples in dataset
+    dataset = remove_empty(dataset)
 
     # use a certain proportion of samples
-    if data_proportion != 1:
+    if data_proportion != 1.0:
         n = int(dataset.num_rows * data_proportion)
         dataset = dataset.select(
             np.random.choice(dataset.num_rows, size=n, replace=False)
