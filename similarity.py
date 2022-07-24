@@ -3,7 +3,6 @@ from typing import NamedTuple, List
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-from datasets import Dataset
 from summaries.aligners import RougeNAligner
 from LoadData import load_data
 
@@ -26,15 +25,6 @@ def compute_similarity(dataset, n_gram: int = 2) -> NamedTuple:
     pos = []  # relative position to the most similar sentences of all summaries
 
     for sample in tqdm(dataset):
-        # ignore empty source and target
-        if (
-            sample["target"] == ""
-            or sample["target"] == []
-            or sample["source"] == ""
-            or sample["source"] == []
-        ):
-            continue
-
         m = []  # mean
         for aligned_sentence in aligner.extract_source_sentences(
             sample["target"], sample["source"]
@@ -89,11 +79,6 @@ def get_simi(
     dataset_name: str, split: str = "train", data_proportion: float = 1.0
 ) -> NamedTuple:
     dataset = load_data(dataset_name, split, data_proportion)
-
-    if dataset_name == "wiki_lingua":
-        dataset = pd.DataFrame(dataset["source"])
-        dataset = dataset.rename(columns={"document": "source", "summary": "target"})
-        dataset = Dataset.from_pandas(dataset)
 
     similarity = compute_similarity(dataset)
 

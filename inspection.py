@@ -54,33 +54,20 @@ def format_tuning(dataset):
     Input: a huggingface dataset with feature type of Sequence
     Output: split features as source and target and combine sentences
     """
-    try:
-        if (
-            dataset.features["source"].feature._type == "Value"
-        ):  # One row of source is a line in article.
-            dataset = dataset.to_pandas()
 
-    except AttributeError:
-        if len(dataset.features["source"].feature) > 1:
-            dataset = pd.DataFrame(dataset["source"])
-            dataset = dataset.rename(
-                columns={"document": "source", "summary": "target"}
-            )
+    if dataset.features["source"].feature._type == "Value":
+        dataset = pd.DataFrame(
+            dataset
+        )  # unknown error caused by to_pandas() for selected wiki_lingua
+    else:
+        raise TypeError("Unknown type of source and target!")
 
     dataset["source"] = dataset["source"].str.join("")
     dataset["target"] = dataset["target"].str.join("")
     return dataset
 
 
-def remove_empty(df):
-    df.replace(to_replace=r"^\s*$", value=np.nan, regex=True, inplace=True)
-    df = df.dropna()
-    return df
-
-
 def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
-
-    # Use pandas dataframe to process data and remove samples that contain empty strings.
 
     if dataset.features["source"]._type == "Value":  # One row of source is one article.
         dataset = dataset.to_pandas()
@@ -89,8 +76,6 @@ def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
         dataset.features["source"]._type == "Sequence"
     ):  # One row of source is a line in article or combined with article, summary and id.
         dataset = format_tuning(dataset)
-
-    dataset = remove_empty(dataset)
 
     if tokenization_method == "whitespace":
         stats_src = whitespace_token(dataset["source"])
