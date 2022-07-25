@@ -41,7 +41,7 @@ def whitespace_token(samples: List[str]) -> NamedTuple:
     # get the tokens length of each row of sample
     lens = samples.str.split().str.len()
 
-    stats.lens = lens
+    stats.lens = np.array(lens)  # convert pd.Series to np.array
     stats.mean = np.mean(lens)
     stats.median = np.median(lens)
     stats.std = np.std(lens)
@@ -93,6 +93,44 @@ def lens_cal(dataset, tokenization_method: str = "whitespace") -> NamedTuple:
     stats = stats_all(src, tg, mean_ratio, dataset.shape[0])
 
     return stats
+
+
+def representative_len_samples(
+    dataset_name: str,
+    split: str = "train",
+    tokenization_method: str = "whitespace",
+) -> None:
+
+    dataset = load_data(dataset_name, split)
+    stats = lens_cal(dataset, tokenization_method)
+
+    max_src_idx = int(stats.src.lens.argmax())
+    max_tg_idx = int(stats.tg.lens.argmax())
+    min_src_idx = int(stats.src.lens.argmin())
+    min_tg_idx = int(stats.tg.lens.argmin())
+
+    # reshape to compute closest values using l2 norm
+    src_tg_vectors = np.concatenate(
+        (stats.src.lens.reshape(1, -1), stats.tg.lens.reshape(1, -1)), axis=0
+    )
+    mean_vector = np.array([[stats.src.mean], [stats.tg.mean]])
+    median_vector = np.array([[stats.src.median], [stats.tg.median]])
+    mean_idx = int(np.linalg.norm(src_tg_vectors - mean_vector, axis=0).argmin())
+    median_idx = int(np.linalg.norm(src_tg_vectors - median_vector, axis=0).argmin())
+
+    print(f"********{dataset_name}********")
+    print("****Sample with maximum length of reference****")
+    print(dataset[max_src_idx])
+    print("****Sample with maximum length of summary****")
+    print(dataset[max_tg_idx])
+    print("****Sample with minimum length of reference****")
+    print(dataset[min_src_idx])
+    print("****Sample with minimum length of summary****")
+    print(dataset[min_tg_idx])
+    print("****Sample with average length of reference & summary****")
+    print(dataset[mean_idx])
+    print("****Sample with median length of reference & summary****")
+    print(dataset[median_idx])
 
 
 def print_lens(
