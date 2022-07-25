@@ -38,8 +38,8 @@ def get_args():
         "--stats",
         nargs=1,
         type=str,
-        choices=["similarity", "length"],
-        help="type of stats: similarity, length",
+        choices=["similarity", "length", "samples_len"],
+        help="type of stats: similarity, length, representative samples according to length",
     )
     # parser.add_argument(
     #     "--sf", nargs=1, type=str, help="if save the figure: 1, otherwise: 0"
