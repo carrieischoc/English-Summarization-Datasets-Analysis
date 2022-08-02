@@ -3,7 +3,7 @@ from LoadData import load_data
 
 
 class TestStats(unittest.TestCase):
-    def test_LoadDate(self):
+    def test_LoadData(self):
         dataset = load_data("wiki_lingua")
         # the original row of index 14 is empty
         dataset = dataset.select([0, 14])
