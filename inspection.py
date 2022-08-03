@@ -191,3 +191,18 @@ def get_print_lens(
 ) -> None:
     stats = get_lens(dataset_name, split, tokenization_method, data_proportion)
     print_lens(stats, stats_to_compute, dataset_name, tokenization_method)
+
+
+def filter_invalid_samples(dataset_name: str, split: str = "train"):
+
+    dataset = load_data(dataset_name, split)
+    stats = lens_cal(dataset)
+
+    # filter samples with ratio < 1.0
+    compression_ratios = stats.src.lens / stats.tg.lens
+    filter_ratio_index = list(np.where(compression_ratios < 1.0)[0])
+    dataset = dataset.filter(
+        lambda example, idx: idx not in filter_ratio_index, with_indices=True
+    )
+
+    return dataset
