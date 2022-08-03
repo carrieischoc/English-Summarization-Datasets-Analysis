@@ -62,8 +62,9 @@ def format_tuning(dataset):
     else:
         raise TypeError("Unknown type of source and target!")
 
-    dataset["source"] = dataset["source"].str.join("")
-    dataset["target"] = dataset["target"].str.join("")
+    # merge with whitespace
+    dataset["source"] = dataset["source"].str.join(" ") 
+    dataset["target"] = dataset["target"].str.join(" ")
     return dataset
 
 
