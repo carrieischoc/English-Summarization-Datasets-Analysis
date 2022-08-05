@@ -63,7 +63,7 @@ def format_tuning(dataset):
         raise TypeError("Unknown type of source and target!")
 
     # merge with whitespace
-    dataset["source"] = dataset["source"].str.join(" ") 
+    dataset["source"] = dataset["source"].str.join(" ")
     dataset["target"] = dataset["target"].str.join(" ")
     return dataset
 
@@ -120,17 +120,35 @@ def representative_len_samples(
     median_idx = int(np.linalg.norm(src_tg_vectors - median_vector, axis=0).argmin())
 
     print(f"********{dataset_name}********")
-    print("****Sample with maximum length of reference****")
+    print("****Sample with maximum length of source****")
+    print(
+        f"****[length] [source]: {stats.src.lens[max_src_idx]:.2f} [target]: {stats.tg.lens[max_src_idx]:.2f}****"
+    )
     print(dataset[max_src_idx])
-    print("****Sample with maximum length of summary****")
+    print("****Sample with maximum length of target****")
+    print(
+        f"****[length] [source]: {stats.src.lens[max_tg_idx]:.2f} [target]: {stats.tg.lens[max_tg_idx]:.2f}****"
+    )
     print(dataset[max_tg_idx])
-    print("****Sample with minimum length of reference****")
+    print("****Sample with minimum length of source****")
+    print(
+        f"****[length] [source]: {stats.src.lens[min_src_idx]:.2f} [target]: {stats.tg.lens[min_src_idx]:.2f}****"
+    )
     print(dataset[min_src_idx])
-    print("****Sample with minimum length of summary****")
+    print("****Sample with minimum length of target****")
+    print(
+        f"****[length] [source]: {stats.src.lens[min_tg_idx]:.2f} [target]: {stats.tg.lens[min_tg_idx]:.2f}****"
+    )
     print(dataset[min_tg_idx])
-    print("****Sample with average length of reference & summary****")
+    print("****Sample with average length of source & target****")
+    print(
+        f"****[length] [source]: {stats.src.lens[mean_idx]:.2f} [target]: {stats.tg.lens[mean_idx]:.2f}****"
+    )
     print(dataset[mean_idx])
-    print("****Sample with median length of reference & summary****")
+    print("****Sample with median length of source & target****")
+    print(
+        f"****[length] [source]: {stats.src.lens[median_idx]:.2f} [target]: {stats.tg.lens[median_idx]:.2f}****"
+    )
     print(dataset[median_idx])
 
 

@@ -18,7 +18,9 @@ paper_rc = {"lines.linewidth": 0.5, "lines.markersize": 15}
 sns.set_context("paper", rc=paper_rc)
 
 
-def convert_one_class_to_dataframe(ds: str, fe: str, cls: str, sts: List) -> pd.DataFrame:
+def convert_one_class_to_dataframe(
+    ds: str, fe: str, cls: str, sts: List
+) -> pd.DataFrame:
     df = pd.DataFrame()
     df[fe] = sts
     df = df.explode(fe, ignore_index=True)
@@ -148,7 +150,7 @@ def draw_violin(
     )
 
     if savefig:
-        plt.savefig(f"plots/{name}_violin.png", bbox_inches="tight")
+        plt.savefig(f"plots/{name}_violin.png", bbox_inches="tight", dpi=900)
 
 
 def draw_strip(
@@ -211,9 +213,9 @@ def draw_strip(
 
     if savefig:
         if logscale:
-            plt.savefig(f"plots/{name}_log_strip.png", bbox_inches="tight")
+            plt.savefig(f"plots/{name}_log_strip.png", bbox_inches="tight", dpi=900)
         else:
-            plt.savefig(f"plots/{name}_strip.png", bbox_inches="tight")
+            plt.savefig(f"plots/{name}_strip.png", bbox_inches="tight", dpi=900)
 
 
 def draw_bar(
@@ -245,9 +247,9 @@ def draw_bar(
 
     if savefig:
         if logscale:
-            plt.savefig(f"plots/{name}_log_bar.png", bbox_inches="tight")
+            plt.savefig(f"plots/{name}_log_bar.png", bbox_inches="tight", dpi=900)
         else:
-            plt.savefig(f"plots/{name}_bar.png", bbox_inches="tight")
+            plt.savefig(f"plots/{name}_bar.png", bbox_inches="tight", dpi=900)
 
 
 def plot_pos(pos: List, name: str, savefig: bool = True):
@@ -287,9 +289,9 @@ def cal_show_CompressionRatio(
         ax.set_yscale("log")
     if savefig:
         if logscale:
-            plt.savefig(f"plots/{name}_log_cpRatio.png")
+            plt.savefig(f"plots/{name}_log_cpRatio.png", dpi=900)
         else:
-            plt.savefig(f"plots/{name}_cpRatio.png")
+            plt.savefig(f"plots/{name}_cpRatio.png", dpi=900)
 
 
 if __name__ == "__main__":
@@ -340,7 +342,9 @@ if __name__ == "__main__":
             # Plot of distribution of relative position of most similar sentence in article
             plot_pos(sts.pos, dataset)
 
-        df = convert_classes_to_dataframe(stats_of_class, cls_names, datasets, "similarity")
+        df = convert_classes_to_dataframe(
+            stats_of_class, cls_names, datasets, "similarity"
+        )
 
         # draw violin plot of distribution of mean, max, min of similarity, with mean and std (green), median (red)
         draw_violin(df, "simi", y="similarity")
