@@ -66,8 +66,55 @@ The following is a violin plot which is quite useful to show the distribution of
 
 Finally, I use histograms to illustrate count distribution of compression ratios, which indicates the fraction ratio between document length and summary length. 
 ![Histogram of Compression Ratio](plots/spacy_len_cnn_daily_cpRatio.png) ![Histogram of Compression Ratio](plots/xsum_cpRatio.png) 
+* Red line: mean;
+* Green line: maximum; 
+* Black line: median;  
+* Dashed gray: std.
 
-For example, the cnn_dailymail and xsum news articles,
+For instance of the above figures, the `cnn_dailymail` and `xsum` news articles both have most of ratios concentrated around 20. In order to get more detailed values, I also generate a log-scale version of counts. The same phenomenon also exists on `billsum` and `wiki_lingua` datasets. However, it’s surprisingly shown in both abstract and full text figures of `scitldr` that ratios are distributed like a Gaussian distribution in a certain range.
+
+***Similarity***
+The similarity statistics are generated with the help of [Dennis](https://github.com/dennlinger/aspect-summaries) library. It computes fmeasure scores with 2-grams between reference document and reference summary. Part of relative codes are as follows.
+
+```python
+from summaries.aligners import RougeNAligner
+
+aligner = RougeNAligner(n=n_gram, optimization_attribute="fmeasure", lang="en")
+
+for sample in tqdm(dataset):
+        m = []  # mean
+        for aligned_sentence in aligner.extract_source_sentences(
+            sample["target"], sample["source"]
+        ):
+            m.append(aligned_sentence.metric)
+            pos.append(aligned_sentence.relative_position)
+```
+
+I collect the mean, maximum and minimum similarity among summaries of each sample. Then I compute the average and median value of all means, the average of all maximum values, the average of all minimum values, and the maximum/minimum value among all summaries. The below is a table of all fmeasure scores.
+
+| Datasets | Mean | Median | STD | Max_Max | Min_Min | Mean_Max | Mean_Min | 
+| :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | 
+| CNN_daily | 0.2798 | 0.2495 | 0.1450 | 1.0000 | 0.0000 | 0.4371 | 0.1476 | 
+| XSUM | 0.0931 | 0.0833 | 0.0636 | 1.0000 | 0.0000 | 0.0932 | 0.0929 |
+| wiki_lingua | 0.0626 | 0.0547 | 0.0353 | 0.5238 | 0.0000 | 0.0831 | 0.0434 |
+| scitldr_abs | 0.2456 | 0.1739 | 0.2270 | 1.0000 | 0.0000 | 0.2456 | 0.2456 |
+| scitldr_full | 0.3239 | 0.2540 | 0.2251 | 1.0000 | 0.0000 | 0.3239 | 0.3239 |
+| billsum | 0.2670 | 0.2564 | 0.1077 | 1.0000 | 0.0000 | 0.4095 | 0.1413 |
+
+Obviously, all similarity scores are relatively low, meaning that they match the description that they are used for abstractive summarization. It’s normal we have summaries that are same as sentences in the document or totally different from the source. But it’s quite interesting to see that the highest similarity score in `wiki_lingua` means only half overlap in the summary. For further comparison, I draw the distribution of these similarity scores with a violin plot.
+![Distribution of Similarity](plots/spacy_len_ref_violin.png "Distribution of Similarity")
+
+In each sample:
+* Mean similarity of all summaries; 
+* Max similarity of all summaries; 
+* Min similarity of all summaries;
+* Green dot and bar: mean and std; 
+* Orange line: median.
+
+We have the same distribution of the above three data in full text and abstract of `scitldr` and `xsum` dataset, indicating that there’s only one sentence in the summary of each sample. In general, the standard deviations are all quite high and  From the maximum similarity aspect, cnn and billsum seem to be supportive for extractive summarization. From the shape of violins, we could know that all similarity scores of these six datasets are not concentrated on the mean or median values and kind like spread out all over the range of [0,1].
+
+
+
 
 
 
