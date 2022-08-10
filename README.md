@@ -51,19 +51,22 @@ I generate length statistics with `Spacy` tokenization method which provides mor
 The results have similar values to the lengths statistics in some published paper.[^1] In overall, the lengths of samples in `wiki_lingua`, full text of `scitldr` and `billsum` are extremely high, which may exceed the model limitation. 
 
 In order to get more expressive comparisons, I generate different types of plots propagating various information of lengths distribution, which can be found in the `Plot of length stats` page in `Wiki` repository.  
-![Original Distribution of Lengths](plots/spacy_len_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_len_log_strip.png "Original Distribution of Lengths")
+![Original Distribution of Lengths](plots/spacy_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_log_strip.png "Original Distribution of Lengths")
 * Light blue: document, dark blue: summary; 
 * Black dot and bar: mean and std;
-* Orange line: median.*
+* Orange line: median.
+
 I use the strip plot to explore length difference between the document and summary, and compare all six datasets. From the non-log plot, we can see that the length difference between source and target of the full text scientific articles is extremely high. I guess it’s because the annotators only use critical labels or titles of sections and subsections to write the summary. For news articles, the source length of `cnn_dailymail` are shorter than that of `xsum`, while the summary length is longer. The strip plot can also clearly illustrate the outliers among `scitldr`, `billsum` and `xsum`, especially several extremely far away points among full text of `scitldr` and `xsum`. From the log-scale strip plot, we can conclude that for all six datasets, the mean values are very close to the median values. The standard deviations of `wiki_lingua`, summary length of `billsum` and the source length of `xsum` are really high.
 
-![Distribution of Lengths (violin)](plots/spacy_len_ref_violin.png "Document Lengths Distribution") ![Distribution of Lengths (violin)](plots/spacy_len_ref_violin.png "Summary Lengths Distribution")
+![Distribution of Lengths (violin)](plots/spacy_len_ref_violin.png "Document Lengths Distribution") ![Distribution of Lengths (violin)](plots/spacy_len_sum_violin.png "Summary Lengths Distribution")
 * Green dot and bar: mean and std; 
 * Orange line: median.
+
 The following is a violin plot which is quite useful to show the distribution of lengths of all datasets for document and summary respectively. Although the length difference among theses datasets is quite large, we can still know that all of them have most of lengths centered around the mean and median values for both document and summary. And the number of outliers is also small.
 
 Finally, I use histograms to illustrate count distribution of compression ratios, which indicates the fraction ratio between document length and summary length. 
-![Histogram of Compression Ratio](plots/cnn_daily_cpRatio.png) ![Histogram of Compression Ratio](plots/xsum_cpRatio.png) 
+![Histogram of Compression Ratio](plots/spacy_len_cnn_daily_cpRatio.png) ![Histogram of Compression Ratio](plots/xsum_cpRatio.png) 
+
 For example, the cnn_dailymail and xsum news articles,
 
 
