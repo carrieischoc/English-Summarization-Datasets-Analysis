@@ -36,7 +36,8 @@ Furthermore, I have some other interesting findings. For scientific articles in 
 
 The exploratory analysis of the above six datasets is carried out with respect to two aspects: length and similarity.
 
-***Length***
+**Length**
+
 I generate length statistics with `Spacy` tokenization method which provides more accurate tokenization results. For each dataset, I collect data of the number of samples, the mean/median length and standard deviation of documents, the mean/median length and standard deviation of summaries. But note here, since plots of distribution of lengths are very similar between `whitespace` tokenization and `Spacy` tokenization, I only present you some results by `Spacy` tokenization below. Results of the two methods can be found in the `Length stats of article and summary` page in `Wiki` repository.
 
 | Datasets | Num | Article<br>Mean | Article<br>Median | Article<br>STD | Summary<br>Mean | Summary<br>Median | Summary<br>STD | Ratio | 
@@ -48,7 +49,7 @@ I generate length statistics with `Spacy` tokenization method which provides mor
 | scitldr_full | 1992 | 4982.55 | 4879.50 | 2238.26 | 19.27 | 18.00 | 7.71 | 301.53 | 
 | billsum | 18949 | 1801.20 | 1632.00 | 724.72 | 209.37 | 183.00 | 137.00 | 13.21 |
 
-The results have similar values to the lengths statistics in some published paper.[^1] In overall, the lengths of samples in `wiki_lingua`, full text of `scitldr` and `billsum` are extremely high, which may exceed the model limitation. 
+The results have similar values to the lengths statistics in some published paper[^1]. In overall, the lengths of samples in `wiki_lingua`, full text of `scitldr` and `billsum` are extremely high, which may exceed the model limitation. 
 
 In order to get more expressive comparisons, I generate different types of plots propagating various information of lengths distribution, which can be found in the `Plot of length stats` page in `Wiki` repository.  
 ![Original Distribution of Lengths](plots/spacy_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_log_strip.png "Original Distribution of Lengths")
@@ -73,7 +74,8 @@ Finally, I use histograms to illustrate count distribution of compression ratios
 
 For instance of the above figures, the `cnn_dailymail` and `xsum` news articles both have most of ratios concentrated around 20. In order to get more detailed values, I also generate a log-scale version of counts. The same phenomenon also exists on `billsum` and `wiki_lingua` datasets. However, it’s surprisingly shown in both abstract and full text figures of `scitldr` that ratios are distributed like a Gaussian distribution in a certain range.
 
-***Similarity***
+**Similarity**
+
 The similarity statistics are generated with the help of [Dennis](https://github.com/dennlinger/aspect-summaries) library. It computes fmeasure scores with 2-grams between reference document and reference summary. Part of relative codes are as follows.
 
 ```python
@@ -102,7 +104,7 @@ I collect the mean, maximum and minimum similarity among summaries of each sampl
 | billsum | 0.2670 | 0.2564 | 0.1077 | 1.0000 | 0.0000 | 0.4095 | 0.1413 |
 
 Obviously, all similarity scores are relatively low, meaning that they match the description that they are used for abstractive summarization. It’s normal we have summaries that are same as sentences in the document or totally different from the source. But it’s quite interesting to see that the highest similarity score in `wiki_lingua` means only half overlap in the summary. For further comparison, I draw the distribution of these similarity scores with a violin plot.
-![Distribution of Similarity](plots/spacy_len_ref_violin.png "Distribution of Similarity")
+![Distribution of Similarity](plots/similarity_violin.png "Distribution of Similarity")
 
 In each sample:
 * Mean similarity of all summaries; 
@@ -112,15 +114,48 @@ In each sample:
 * Orange line: median.
 
 We have the same distribution of the above three data in full text and abstract of `scitldr` and `xsum` dataset, indicating that there’s only one sentence in the summary of each sample. In general, the standard deviations are all quite high and  From the maximum similarity aspect, cnn and billsum seem to be supportive for extractive summarization. From the shape of violins, we could know that all similarity scores of these six datasets are not concentrated on the mean or median values and kind like spread out all over the range of [0,1].
+![Probability of Relative Position of the most Similar Sentence](plots/cnn_dailymail_pos.png "Probability of Relative Position of the most Similar Sentence (cnn)") ![Probability of Relative Position of the most Similar Sentence](plots/xsum_pos.png "Probability of Relative Position of the most Similar Sentence (xsum)")
 
+I'm also interested in which sentence or the location of sentence which is more likely to give the critical idea of the document, so that I make the probability histogram plot for relative position of the most similar sentence of summaries in one sample. For example the figures of news articles above, we can conclude that the beginning sentences are much more important than others. Particularly, the possibility that the annotators make use of the first few sentences in `xsum` is twice of that in `cnn_dailymail`, while the ending sentences in `xsum` nearly as important as the beginning sentences in `cnn_dailymail`. However, the penomenon of "summary at the beginning" is much more conspicuous in `scitldr`, with up to about 27% beginning summaries in both abstract and full text articles. And especially for the abstract, the summaries also highly refer to any other positions from the original document. Last but not the least, two other datasets seem to show different evidences of relative position. In the plot of `billsum`, we find that the data is nearly evenly distributed, which coincide with my conjecture that the annotators summarize the bills with titles or critical points of subsections. In the plot of `wiki_lingua`, it's surprising to view that the vast majority of summaries are chosen from the beginning, middle, and end of WikiHow articles. Other plots can be seen in the `Plot of distribution of relative position of most similar sentence in article` page in `Wiki` repository. 
 
+##  Practical Insights
 
+We also have an amusing discovery that there exists some empty strings in source or target of some datasets. Thus, we focus on one particular dataset with two different versions: `wiki_lingua` and `GEM/wiki_lingua`. They are all multi-lingua summarization datasets, while we only focus on the English data of them, and the later one is a benchmark dataset used in such summarization task. 
 
+We find that there’re quite a large number of empty strings in `wiki_lingua` as the following cases. For instance, all columns can be empty, or there're contents indicating the summary but with no contents of the article, while the website links exist. So I search some of the urls for the empty samples and the result shows that part of them are valid, while part of them are not and with a warning - "We're sorry. This article is currently in quality review.". In other words, the reason may lie in the data loading script and missing articles on the English WikiHow website. In total, empty strings of each feature like "section_name", "document" and "summary" can take up to about 22.6%.
 
+* 'section_name': [], 'document': [], 'summary': [], 'url': [......]
+* 'section_name': [......], 'document': [], 'summary': [......]
+
+Therefore, I compare it with the bechmark version `GEM/wiki_lingua` in order to look for some clues. At the beginning, I find that there're only 21 empty source samples in the GEM version. For other languages, there're 10 empty source samples in Spanish, 2 empty source samples in french and nearly no empty source samples in German. After about one month, I update the downloading data of English part of `GEM/wiki_lingua` and there's no empty samples any more. They update their github repository while there's no update of `wiki_lingua` for almost one year. I also test "url" of all the samples in `wiki_lingua`, which indicate that they are truly from WikiHow website. Nevertheless, there's no evidence of links for `GEM/wiki_lingua`, and it's claimed as collecting articles from WikiHow while with some samples not being found from English WikiHow website. So I read the paper[^2] which describe its data collection and I guess some of the samples are translated from wikihow of other languages by WikiHow expert. There’s still no answer why their contents seem to be different, although they are linked to the same paper and GitHub repository.
+
+Additionally, I also make a comparison of the length statistics between these two datasets as shown in the table below. 
+
+| Datasets | Num | Article<br>Mean | Article<br>Median | Article<br>STD | Summary<br>Mean | Summary<br>Median | Summary<br>STD | Ratio | 
+| :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | 
+| wiki_lingua | 47260 | 1098.85 | 1040.00 | 640.71 | 98.02 | 85.00 | 58.31 | 13.31 | 
+| GEM/wiki_lingua | 95517 | 379.68 | 340.00 | 224.30 | 32.23 | 28.00 | 19.05 | 14.11 |
+
+The number of samples in `GEM/wiki_lingua` is about twice of that in `wiki_lingua`, while the article and summary length are around one third of that in `wiki_lingua`. However, they have close values of the ratio of document length over summary length at around 14.
+
+## Library usage
+
+Our library is neatly packaged and users can use it easily, which also supports other datasets for English summarization. We have four dictionaries (`ds_name_list.json`, `ds_version_dict.json`, `source_names.json`, `target_names.json`) for you to add other dataset names and versions to download from `huggingface`, and you should also provide the source and target names to help the library rename features of the dataset you want to investigate.
+
+The library mainly has four functionalities: preprocessing, inspection, plot and postprocessing. `LoadData.py` generalize the downloading and processing for datasets used in English summarization, which also removes all empty samples for more accurate research. In addition, you can have a fast investigation with a small proportion of data randomly selected from the dataset. 
+
+If you want the exact values of some statistic, call `generate_stats.py` with different arguments to select dataset and proportion of data to investigate. For instance, `python generate_stats.py -d xsum --stats length -t spacy -p 0.1` will print all length statistics for 10% data of `xsum` with Spacy tokenization method.
+
+If you want plots of some statistic, call `generate_plot.py` with different arguments to generate all types of plot described above for all datasets in the dictionary. For instance, `python generate_plot.py --stats similarity -p 0.1` will provide all plots of similarity statistics for 10% data of each dataset.
+
+Finally, the library also supports to remove samples whose compression ratio is less than 1.0, which are obviously invalid samples. 
+
+## Future Work
+
+It might be usefull to explore the reason and meaning of newline symbols in the dataset. What's more, we can also design a rule or look for the threshold of whether to remove these newline symbols or not. Besides, we can research how to make use of them for summarization as well. 
 
 ## References
 
-1. Narayan, Shashi ; Cohen, Shay B. ; Lapata, Mirella: Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization. In: Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing. Brussels, Belgium: Association for Computational Lin-
-guistics, Oktober-November 2018, 1797–1807. Retrieved from: https://aclanthology.org/D18-1206.
+[^1]: Narayan, Shashi ; Cohen, Shay B. ; Lapata, Mirella: Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization. In: Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing. Brussels, Belgium: Association for Computational Linguistics, Oktober-November 2018, 1797–1807. Retrieved from: https://aclanthology.org/D18-1206.
 
-
+[^2]: Ladhak, Faisal ; Durmus, Esin ; Cardie, Claire ; McKeown, Kathleen: WikiLingua: A New Benchmark Dataset for Cross-Lingual Abstractive Summarization.In: Findings of the Association for Computational Linguistics: EMNLP 2020. Online: Association for Computational Linguistics, November 2020, 4034–4048. Retrieved from: https://aclanthology.org/2020.findings-emnlp.360
