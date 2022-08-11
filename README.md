@@ -53,7 +53,7 @@ The results have similar values to the lengths statistics in some published pape
 
 In order to get more expressive comparisons, I generate different types of plots propagating various information of lengths distribution, which can be found in the `Plot of length stats` page in `Wiki` repository.  
 
-<img src="plots/spacy_strip.png" alt="Original Distribution of Lengths" width="400"/> <img src="plots/spacy_log_strip.png" alt="Log-scale Distribution of Lengths" width="400"/>
+<img src="plots/spacy_strip.png" alt="Original Distribution of Lengths" width="450"/> <img src="plots/spacy_log_strip.png" alt="Log-scale Distribution of Lengths" width="450"/>
 <!-- ![Original Distribution of Lengths](plots/spacy_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_log_strip.png "Original Distribution of Lengths") -->
 * Light blue: document, dark blue: summary; 
 * Black dot and bar: mean and std;
@@ -61,7 +61,7 @@ In order to get more expressive comparisons, I generate different types of plots
 
 I use the strip plot to explore length difference between the document and summary, and compare all six datasets. From the non-log plot, we can see that the length difference between source and target of the full text scientific articles is extremely high. I guess it’s because the annotators only use critical labels or titles of sections and subsections to write the summary. For news articles, the source length of `cnn_dailymail` are shorter than that of `xsum`, while the summary length is longer. The strip plot can also clearly illustrate the outliers among `scitldr`, `billsum` and `xsum`, especially several extremely far away points among full text of `scitldr` and `xsum`. From the log-scale strip plot, we can conclude that for all six datasets, the mean values are very close to the median values. The standard deviations of `wiki_lingua`, summary length of `billsum` and the source length of `xsum` are really high.
 
-<img src="plots/spacy_len_ref_violin.png" alt="Document Lengths Distribution" width="400"/> <img src="plots/spacy_len_sum_violin.png" alt="Summary Lengths Distribution" width="400"/>
+<img src="plots/spacy_len_ref_violin.png" alt="Document Lengths Distribution" width="450"/> <img src="plots/spacy_len_sum_violin.png" alt="Summary Lengths Distribution" width="450"/>
 <!-- ![Distribution of Lengths (violin)](plots/spacy_len_ref_violin.png "Document Lengths Distribution") ![Distribution of Lengths (violin)](plots/spacy_len_sum_violin.png "Summary Lengths Distribution") -->
 * Green dot and bar: mean and std; 
 * Orange line: median.
@@ -70,7 +70,7 @@ The following is a violin plot which is quite useful to show the distribution of
 
 Finally, I use histograms to illustrate count distribution of compression ratios, which indicates the fraction ratio between document length and summary length. 
 
-<img src="plots/spacy_len_cnn_daily_cpRatio.png" alt="Histogram of Compression Ratio" width="400"/> <img src="plots/xsum_cpRatio.png" alt="Histogram of Compression Ratio" width="400"/>
+<img src="plots/spacy_len_cnn_daily_cpRatio.png" alt="Histogram of Compression Ratio" width="450"/> <img src="plots/xsum_cpRatio.png" alt="Histogram of Compression Ratio" width="450"/>
 <!-- ![Histogram of Compression Ratio](plots/spacy_len_cnn_daily_cpRatio.png) ![Histogram of Compression Ratio](plots/xsum_cpRatio.png)  -->
 * Red line: mean;
 * Green line: maximum; 
@@ -110,7 +110,7 @@ I collect the mean, maximum and minimum similarity among summaries of each sampl
 
 Obviously, all similarity scores are relatively low, meaning that they match the description that they are used for abstractive summarization. It’s normal we have summaries that are same as sentences in the document or totally different from the source. But it’s quite interesting to see that the highest similarity score in `wiki_lingua` means only half overlap in the summary. For further comparison, I draw the distribution of these similarity scores with a violin plot.
 
-<img src="plots/similarity_violin.png" alt="Distribution of Similarity" width="400"/> 
+<img src="plots/similarity_violin.png" alt="Distribution of Similarity" width="450"/> 
 <!-- ![Distribution of Similarity](plots/similarity_violin.png "Distribution of Similarity") -->
 
 In each sample:
@@ -122,7 +122,7 @@ In each sample:
 
 We have the same distribution of the above three data in full text and abstract of `scitldr` and `xsum` dataset, indicating that there’s only one sentence in the summary of each sample. In general, the standard deviations are all quite high and  From the maximum similarity aspect, cnn and billsum seem to be supportive for extractive summarization. From the shape of violins, we could know that all similarity scores of these six datasets are not concentrated on the mean or median values and kind like spread out all over the range of [0,1].
 
-<img src="plots/cnn_dailymail_pos.png" alt="Probability of Relative Position of the most Similar Sentence (cnn)" width="400"/> <img src="plots/xsum_pos.png" alt="Probability of Relative Position of the most Similar Sentence (xsum)" width="400"/>
+<img src="plots/cnn_dailymail_pos.png" alt="Probability of Relative Position of the most Similar Sentence (cnn)" width="450"/> <img src="plots/xsum_pos.png" alt="Probability of Relative Position of the most Similar Sentence (xsum)" width="450"/>
 <!-- ![Probability of Relative Position of the most Similar Sentence](plots/cnn_dailymail_pos.png "Probability of Relative Position of the most Similar Sentence (cnn)") ![Probability of Relative Position of the most Similar Sentence](plots/xsum_pos.png "Probability of Relative Position of the most Similar Sentence (xsum)") -->
 
 I'm also interested in which sentence or the location of sentence which is more likely to give the critical idea of the document, so that I make the probability histogram plot for relative position of the most similar sentence of summaries in one sample. For example the figures of news articles above, we can conclude that the beginning sentences are much more important than others. Particularly, the possibility that the annotators make use of the first few sentences in `xsum` is twice of that in `cnn_dailymail`, while the ending sentences in `xsum` nearly as important as the beginning sentences in `cnn_dailymail`. However, the penomenon of "summary at the beginning" is much more conspicuous in `scitldr`, with up to about 27% beginning summaries in both abstract and full text articles. And especially for the abstract, the summaries also highly refer to any other positions from the original document. Last but not the least, two other datasets seem to show different evidences of relative position. In the plot of `billsum`, we find that the data is nearly evenly distributed, which coincide with my conjecture that the annotators summarize the bills with titles or critical points of subsections. In the plot of `wiki_lingua`, it's surprising to view that the vast majority of summaries are chosen from the beginning, middle, and end of WikiHow articles. Other plots can be seen in the `Plot of distribution of relative position of most similar sentence in article` page in `Wiki` repository. 
