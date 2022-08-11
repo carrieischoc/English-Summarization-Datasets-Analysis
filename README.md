@@ -52,7 +52,8 @@ I generate length statistics with `Spacy` tokenization method which provides mor
 The results have similar values to the lengths statistics in some published paper[^1]. In overall, the lengths of samples in `wiki_lingua`, full text of `scitldr` and `billsum` are extremely high, which may exceed the model limitation. 
 
 In order to get more expressive comparisons, I generate different types of plots propagating various information of lengths distribution, which can be found in the `Plot of length stats` page in `Wiki` repository.  
-<img src="plots/spacy_strip.png" alt="Original Distribution of Lengths" width="200"/> <img src="plots/spacy_log_strip.png" alt="Log-scale Distribution of Lengths" width="200"/>
+
+<img src="plots/spacy_strip.png" alt="Original Distribution of Lengths" width="500"/> <img src="plots/spacy_log_strip.png" alt="Log-scale Distribution of Lengths" width="500"/>
 <!-- ![Original Distribution of Lengths](plots/spacy_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_log_strip.png "Original Distribution of Lengths") -->
 * Light blue: document, dark blue: summary; 
 * Black dot and bar: mean and std;
@@ -60,7 +61,8 @@ In order to get more expressive comparisons, I generate different types of plots
 
 I use the strip plot to explore length difference between the document and summary, and compare all six datasets. From the non-log plot, we can see that the length difference between source and target of the full text scientific articles is extremely high. I guess it’s because the annotators only use critical labels or titles of sections and subsections to write the summary. For news articles, the source length of `cnn_dailymail` are shorter than that of `xsum`, while the summary length is longer. The strip plot can also clearly illustrate the outliers among `scitldr`, `billsum` and `xsum`, especially several extremely far away points among full text of `scitldr` and `xsum`. From the log-scale strip plot, we can conclude that for all six datasets, the mean values are very close to the median values. The standard deviations of `wiki_lingua`, summary length of `billsum` and the source length of `xsum` are really high.
 
-![Distribution of Lengths (violin)](plots/spacy_len_ref_violin.png "Document Lengths Distribution") ![Distribution of Lengths (violin)](plots/spacy_len_sum_violin.png "Summary Lengths Distribution")
+<img src="plots/spacy_len_ref_violin.png" alt="Document Lengths Distribution" width="500"/> <img src="plots/spacy_len_sum_violin.png" alt="Summary Lengths Distribution" width="500"/>
+<!-- ![Distribution of Lengths (violin)](plots/spacy_len_ref_violin.png "Document Lengths Distribution") ![Distribution of Lengths (violin)](plots/spacy_len_sum_violin.png "Summary Lengths Distribution") -->
 * Green dot and bar: mean and std; 
 * Orange line: median.
 
