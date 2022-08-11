@@ -52,7 +52,8 @@ I generate length statistics with `Spacy` tokenization method which provides mor
 The results have similar values to the lengths statistics in some published paper[^1]. In overall, the lengths of samples in `wiki_lingua`, full text of `scitldr` and `billsum` are extremely high, which may exceed the model limitation. 
 
 In order to get more expressive comparisons, I generate different types of plots propagating various information of lengths distribution, which can be found in the `Plot of length stats` page in `Wiki` repository.  
-![Original Distribution of Lengths](plots/spacy_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_log_strip.png "Original Distribution of Lengths")
+<img src="plots/spacy_strip.png" alt="Original Distribution of Lengths" width="200"/> <img src="plots/spacy_log_strip.png" alt="Log-scale Distribution of Lengths" width="200"/>
+<!-- ![Original Distribution of Lengths](plots/spacy_strip.png "Original Distribution of Lengths") ![Log-scale Distribution of Lengths](plots/spacy_log_strip.png "Original Distribution of Lengths") -->
 * Light blue: document, dark blue: summary; 
 * Black dot and bar: mean and std;
 * Orange line: median.
