@@ -2,41 +2,18 @@
 
 [[_TOC_]]
 
-## 1 Installation
-
-First section content.
-
-## 2 Introduction 
-
-### 2.1 Motivation
-
-### 2.2 Datasets
-
-## 3 Representative Samples
-
-## 4 Comparison of Document and Summary 
-
-### 4.1 Length
-
-### 4.2 Similarity
-
-## 5 Practical Insights
-
-## 6 Future Work
-
-## 7 References
-
-
 ## Installation
 
 To install the relevant external packages, please run `python3 -m pip install -r requirements.txt`.
 In the case you are using some spacy-specific models, you may have to download additional dependencies by running `python3 -m spacy download en_core_web_sm` or `python3 -m spacy download en_core_web_md`.
 
-## Motivation
+## Introduction
+
+**Motivation**
 
 The general goal of automatic text summarization is to generate a condensed text of the input document which describes the main message of this document. Our task is based on English texts. Totally, there are two different approaches for automatic summarization: extraction and abstraction. Thus, we want an exploratory analysis on multiple datasets used in English summarization, in order to investigate which method the human annotators tend to use in a certain one. What’s more, we are also interesetd in model limitations on these datasets. For example, some approaches based on sequence to sequence model has a limit on the input sequence length with up to 512 or 1024 tokens, meaning that it will crash on longer sentences. In this case, we may need a preprocessing like length reduction or some method can summarize a document separately for the dataset. Finally, we also want to compare some datasets used in English summarization.
 
-## Datasets
+**Datasets**
 
 I select datasets on `huggingface` libraries from a broad spectrum of domains. In the aspect of news articles, I choose `cnn_dailymail` which supports both extractive and abstractive summarization, and `xsum` from BBC for abstractive summarization. For wiki articles, I choose English part of `wiki_lingua` which collects WikiHow articles for abstractive summarization. From the aspect of scientific articles, I select `scitldr` which contains both author-written scientific documents and expert-derived TLDRs. It's divided into two separate datasets as I investigate it as abstract and full text article independently. In addition, I prefer `billsum` which collects US Congressional and California state bills (proposed laws) for both extractive and abstractive summarization. They are all big datasets with high popularity and most of them are used for abstractive summarization.
 
