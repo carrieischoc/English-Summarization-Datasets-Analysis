@@ -1,4 +1,6 @@
-**Contents**
+
+
+1. **Contents**
 
 [[_TOC_]]
 
@@ -11,7 +13,7 @@ In the case you are using some spacy-specific models, you may have to download a
 
 ## Usage
 
-Our library is neatly packaged and users can use it easily, which also supports other datasets for English summarization. We have four dictionaries (`ds_name_list.json`, `ds_version_dict.json`, `source_names.json`, `target_names.json`) for you to add other dataset names and versions to download from `huggingface`, and you should also provide the source and target names to help the library rename features of the dataset you want to investigate.
+Our library is neatly packaged and users can use it easily, which also supports other datasets for English summarization. We have four dictionaries [ds_name_list.json](https://git-dbs.ifi.uni-heidelberg.de/practicals/2022-jiahui-li/-/blob/test/ds_name_list.json), `ds_version_dict.json`, `source_names.json`, `target_names.json`) for you to add other dataset names and versions to download from `huggingface`, and you should also provide the source and target names to help the library rename features of the dataset you want to investigate.
 
 The library mainly has four functionalities: preprocessing, inspection, plot and postprocessing. `LoadData.py` generalize the downloading and processing for datasets used in English summarization, which also removes all empty samples for more accurate research. In addition, you can have a fast investigation with a small proportion of data randomly selected from the dataset. 
 
