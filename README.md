@@ -1,5 +1,5 @@
-|:  **Infobox** : || |
-|---------|-----------------------------|-------------|--------------------------|
+| :  **Infobox** : |||
+| :--------- | :-----------------------------| :-------------|--------------------------|
 | **What?**   | Advanced software practical | **Supervisor**  | Dennis Aumiller           |
 | **Who?**    | Jiahui Li         | **Code**        | [Gitlab](https://git-dbs.ifi.uni-heidelberg.de/practicals/2022-jiahui-li)                   |
 | **When?**   | SoSe 2022                   | **Description** |  Analysis of English Summarization Data |
