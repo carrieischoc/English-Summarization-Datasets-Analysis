@@ -2,14 +2,14 @@
 
 [[_TOC_]]
 
-## 1. Library Description
+## (@) Library Description
 
-### 1.1. Installation
+### Installation
 
 To install the relevant external packages, please run `python3 -m pip install -r requirements.txt`.
 In the case you are using some spacy-specific models, you may have to download additional dependencies by running `python3 -m spacy download en_core_web_sm` or `python3 -m spacy download en_core_web_md`.
 
-### 1.2. Usage
+### Usage
 
 Our library is neatly packaged and users can use it easily, which also supports other datasets for English summarization. We have four dictionaries (`ds_name_list.json`, `ds_version_dict.json`, `source_names.json`, `target_names.json`) for you to add other dataset names and versions to download from `huggingface`, and you should also provide the source and target names to help the library rename features of the dataset you want to investigate.
 
@@ -21,17 +21,17 @@ If you want plots of some statistic, call `generate_plot.py` with different argu
 
 Finally, the library also supports to remove samples whose compression ratio is less than 1.0, which are obviously invalid samples. 
 
-## 2. Introduction
+## Introduction
 
-### 2.1. Motivation
+### Motivation
 
 The general goal of automatic text summarization is to generate a condensed text of the input document which describes the main message of this document. Our task is based on English texts. Totally, there are two different approaches for automatic summarization: extraction and abstraction. Thus, we want an exploratory analysis on multiple datasets used in English summarization, in order to investigate which method the human annotators tend to use in a certain one. What’s more, we are also interesetd in model limitations on these datasets. For example, some approaches based on sequence to sequence model has a limit on the input sequence length with up to 512 or 1024 tokens, meaning that it will crash on longer sentences. In this case, we may need a preprocessing like length reduction or some method can summarize a document separately for the dataset. Finally, we also want to compare some datasets used in English summarization.
 
-### 2.2. Datasets
+### Datasets
 
 I select datasets on `huggingface` libraries from a broad spectrum of domains. In the aspect of news articles, I choose `cnn_dailymail` which supports both extractive and abstractive summarization, and `xsum` from BBC for abstractive summarization. For wiki articles, I choose English part of `wiki_lingua` which collects WikiHow articles for abstractive summarization. From the aspect of scientific articles, I select `scitldr` which contains both author-written scientific documents and expert-derived TLDRs. It's divided into two separate datasets as I investigate it as abstract and full text article independently. In addition, I prefer `billsum` which collects US Congressional and California state bills (proposed laws) for both extractive and abstractive summarization. They are all big datasets with high popularity and most of them are used for abstractive summarization.
 
-## 3. Representative Samples
+## Representative Samples
 
 If the users want to have a quick interact with the samples in the dataset, we can start with some representative samples. I generate six types of samples with whitespace tokenization method according to the length statistics. Here length refers to the number of tokens of source/target in one sample. I obtain samples by the maximum length of source, the maximum length of target, the minimum length of source, the minimum length of target, the average length of both source and target, and the median length of both source and target. I use $`L_2`$ norm to compute the closest sample to mean or median values of sources and targets as follows.
 
@@ -52,11 +52,11 @@ Additionally, the quality doesn’t seem to be quite excellent because there sti
 
 Furthermore, I have some other interesting findings. For scientific articles in `scitldr`, the average length examples show that the target is like the title of a paper, while the summary of the minimum target examples is composed of critical labels of the paper. For law documents in `billsum`, the summary of a bill could be composed of summaries of each section or subsection.
 
-## 4. Comparison of Document and Summary 
+## Comparison of Document and Summary 
 
 The exploratory analysis of the above six datasets is carried out with respect to two aspects: length and similarity.
 
-### 4.1. Length
+### Length
 
 I generate length statistics with `Spacy` tokenization method which provides more accurate tokenization results. For each dataset, I collect data of the number of samples, the mean/median length and standard deviation of documents, the mean/median length and standard deviation of summaries. But note here, since plots of distribution of lengths are very similar between `whitespace` tokenization and `Spacy` tokenization, I only present you some results by `Spacy` tokenization below. Results of the two methods can be found in the `Length stats of article and summary` page in `Wiki` repository.
 
@@ -99,7 +99,7 @@ Finally, I use histograms to illustrate count distribution of compression ratios
 
 For instance of the above figures, the `cnn_dailymail` and `xsum` news articles both have most of ratios concentrated around 20. In order to get more detailed values, I also generate a log-scale version of counts. The same phenomenon also exists on `billsum` and `wiki_lingua` datasets. However, it’s surprisingly shown in both abstract and full text figures of `scitldr` that ratios are distributed like a Gaussian distribution in a certain range.
 
-### 4.2. Similarity
+### Similarity
 
 The similarity statistics are generated with the help of [Dennis](https://github.com/dennlinger/aspect-summaries) library. It computes fmeasure scores with 2-grams between reference document and reference summary. Part of relative codes are as follows.
 
@@ -147,7 +147,7 @@ We have the same distribution of the above three data in full text and abstract 
 
 I'm also interested in which sentence or the location of sentence which is more likely to give the critical idea of the document, so that I make the probability histogram plot for relative position of the most similar sentence of summaries in one sample. For example the figures of news articles above, we can conclude that the beginning sentences are much more important than others. Particularly, the possibility that the annotators make use of the first few sentences in `xsum` is twice of that in `cnn_dailymail`, while the ending sentences in `xsum` nearly as important as the beginning sentences in `cnn_dailymail`. However, the penomenon of "summary at the beginning" is much more conspicuous in `scitldr`, with up to about 27% beginning summaries in both abstract and full text articles. And especially for the abstract, the summaries also highly refer to any other positions from the original document. Last but not the least, two other datasets seem to show different evidences of relative position. In the plot of `billsum`, we find that the data is nearly evenly distributed, which coincide with my conjecture that the annotators summarize the bills with titles or critical points of subsections. In the plot of `wiki_lingua`, it's surprising to view that the vast majority of summaries are chosen from the beginning, middle, and end of WikiHow articles. Other plots can be seen in the `Plot of distribution of relative position of most similar sentence in article` page in `Wiki` repository. 
 
-## 5. Practical Insights
+## Practical Insights
 
 We also have an amusing discovery that there exists some empty strings in source or target of some datasets. Thus, we focus on one particular dataset with two different versions: `wiki_lingua` and `GEM/wiki_lingua`. They are all multi-lingua summarization datasets, while we only focus on the English data of them, and the later one is a benchmark dataset used in such summarization task. 
 
@@ -167,11 +167,11 @@ Additionally, I also make a comparison of the length statistics between these tw
 
 The number of samples in `GEM/wiki_lingua` is about twice of that in `wiki_lingua`, while the article and summary length are around one third of that in `wiki_lingua`. However, they have close values of the ratio of document length over summary length at around 14.
 
-## 6. Future Work
+## Future Work
 
 It might be usefull to explore the reason and meaning of newline symbols in the dataset. What's more, we can also design a rule or look for the threshold of whether to remove these newline symbols or not. Besides, we can research how to make use of them for summarization as well. 
 
-## 7. References
+## References
 
 [^1]: Narayan, Shashi ; Cohen, Shay B. ; Lapata, Mirella: Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization. In: Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing. Brussels, Belgium: Association for Computational Linguistics, Oktober-November 2018, 1797–1807. Retrieved from: https://aclanthology.org/D18-1206.
 
